@@ -6,6 +6,7 @@ Async/event-driven with SSE streaming for real-time agent progress.
 import asyncio
 import json
 import logging
+import pathlib
 import uuid
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -13,7 +14,8 @@ from typing import Any, AsyncIterator, Optional
 
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
 from agents.base_agent import AgentResult
@@ -56,6 +58,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+_FRONTEND = pathlib.Path(__file__).parent.parent / "frontend"
+if _FRONTEND.exists():
+    app.mount("/static", StaticFiles(directory=str(_FRONTEND)), name="static")
+
+@app.get("/", include_in_schema=False)
+async def index():
+    return FileResponse(str(_FRONTEND / "index.html"))
 
 # In-memory event queues for SSE streaming: report_id → list of queues
 _sse_queues: dict[str, list[asyncio.Queue]] = defaultdict(list)

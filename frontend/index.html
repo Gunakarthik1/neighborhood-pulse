@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeighborhoodPulse — Neighborhood Intelligence Platform</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #F7F5F0;
+      --surface:   #FFFFFF;
+      --border:    #E2DDD6;
+      --text:      #1A1A1A;
+      --muted:     #6B6560;
+      --green:     #2D6A4F;
+      --green-bg:  #D8F3DC;
+      --amber:     #D97706;
+      --amber-bg:  #FEF3C7;
+      --red:       #C0392B;
+      --red-bg:    #FDECEA;
+      --blue:      #1E5FAD;
+    }
+
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; font-size: 14px; line-height: 1.6; }
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-logo { font-size: 22px; }
+    .header h1 { font-size: 18px; font-weight: 700; color: var(--green); }
+    .header .subtitle { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #ccc; margin-left: auto; flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .status-dot.ok { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .status-dot.err { background: var(--red); }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 32px 20px 64px; }
+
+    .search-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .search-card h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+
+    .input-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .input-row input[type="text"] {
+      flex: 1;
+      min-width: 220px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+    }
+    .input-row input[type="text"]:focus { border-color: var(--green); }
+
+    .btn-run {
+      padding: 10px 22px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-run:hover { background: #245a41; }
+    .btn-run:disabled { background: #aaa; cursor: not-allowed; }
+
+    .status-bar {
+      margin-top: 16px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      display: none;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--muted);
+    }
+    .status-bar.visible { display: block; }
+    .status-bar.running { background: var(--amber-bg); border-color: var(--amber); color: var(--amber); }
+    .status-bar.done { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+    .status-bar.error { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+
+    .event-log {
+      margin-top: 12px;
+      max-height: 180px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      display: none;
+    }
+    .event-log.visible { display: block; }
+    .event-entry { padding: 2px 0; border-bottom: 1px solid var(--border); }
+    .event-entry .ev-ts { color: #aaa; margin-right: 8px; }
+    .event-entry .ev-type { font-weight: 600; color: var(--blue); }
+
+    /* Report card */
+    .report-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      display: none;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .report-card.visible { display: block; }
+
+    .report-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; }
+    .report-header h2 { font-size: 18px; font-weight: 700; color: var(--text); }
+    .risk-badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700;
+    }
+    .risk-low { background: var(--green-bg); color: var(--green); }
+    .risk-med { background: var(--amber-bg); color: var(--amber); }
+    .risk-high { background: var(--red-bg); color: var(--red); }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 16px;
+    }
+    .stat-box .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 6px; }
+    .stat-box .value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .stat-box .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .section-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 18px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+
+    .agent-list { display: flex; flex-direction: column; gap: 6px; }
+    .agent-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 12px; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 4px; font-size: 13px;
+    }
+    .agent-name { font-weight: 500; }
+    .agent-status { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+    .agent-status.ok { background: var(--green-bg); color: var(--green); }
+    .agent-status.err { background: var(--red-bg); color: var(--red); }
+
+    /* History */
+    .history-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .history-card h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .history-table th { text-align: left; padding: 6px 10px; font-size: 11px; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--border); }
+    .history-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    .history-table tr:last-child td { border-bottom: none; }
+    .history-table tr:hover td { background: var(--bg); }
+    .clickable { cursor: pointer; color: var(--blue); text-decoration: underline; font-family: monospace; font-size: 11px; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🏘</div>
+  <div>
+    <h1>NeighborhoodPulse</h1>
+    <div class="subtitle">Multi-Agent Neighborhood Intelligence Platform</div>
+  </div>
+  <div class="status-dot" id="status-dot" title="API status"></div>
+</div>
+
+<div class="page">
+
+  <!-- Search -->
+  <div class="search-card">
+    <h2>Research a Neighborhood</h2>
+    <div class="input-row">
+      <input type="text" id="location-input" placeholder="e.g. Sunset District, San Francisco, CA" />
+      <input type="text" id="address-input" placeholder="Optional street address" />
+      <button class="btn-run" id="run-btn" onclick="startResearch()">&#9654; Analyze</button>
+    </div>
+    <div class="status-bar" id="status-bar">Idle</div>
+    <div class="event-log" id="event-log"></div>
+  </div>
+
+  <!-- Report -->
+  <div class="report-card" id="report-card">
+    <div class="report-header">
+      <h2 id="report-location">—</h2>
+      <span class="risk-badge risk-low" id="risk-badge">Risk: —</span>
+    </div>
+
+    <div class="report-grid">
+      <div class="stat-box">
+        <div class="label">Risk Score</div>
+        <div class="value" id="risk-score">—</div>
+        <div class="sub">out of 100</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">Citation Accuracy</div>
+        <div class="value" id="cite-accuracy">—</div>
+        <div class="sub">% validated</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">Processing Time</div>
+        <div class="value" id="latency">—</div>
+        <div class="sub">ms</div>
+      </div>
+    </div>
+
+    <div class="section-title">Agent Results</div>
+    <div class="agent-list" id="agent-list">
+      <div style="color:var(--muted);font-size:13px">No agent results yet.</div>
+    </div>
+
+    <div class="section-title">Report Summary</div>
+    <div id="report-summary" style="font-size:13px;color:var(--muted);line-height:1.7">No summary available.</div>
+  </div>
+
+  <!-- History -->
+  <div class="history-card">
+    <h2>Recent Reports</h2>
+    <table class="history-table" id="history-table">
+      <thead>
+        <tr>
+          <th>Report ID</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Risk Score</th>
+          <th>Created</th>
+        </tr>
+      </thead>
+      <tbody id="history-tbody">
+        <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">No reports yet.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const API = '';
+let currentReportId = null;
+let eventSource = null;
+
+/* ── Init ── */
+(async function init() {
+  await checkHealth();
+  await loadHistory();
+})();
+
+/* ── Health ── */
+async function checkHealth() {
+  const dot = document.getElementById('status-dot');
+  try {
+    const r = await fetch(`${API}/api/health`, { signal: AbortSignal.timeout(4000) });
+    dot.className = r.ok ? 'status-dot ok' : 'status-dot err';
+  } catch {
+    dot.className = 'status-dot err';
+  }
+}
+
+/* ── Start research ── */
+async function startResearch() {
+  const location = document.getElementById('location-input').value.trim();
+  if (!location) { alert('Please enter a location.'); return; }
+  const address = document.getElementById('address-input').value.trim();
+
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+
+  setStatus('running', 'Starting research pipeline…');
+  clearEventLog();
+
+  try {
+    const r = await fetch(`${API}/api/research`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ location, address: address || undefined }),
+    });
+    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+    const data = await r.json();
+    currentReportId = data.report_id;
+    setStatus('running', `Pipeline started — report ID: ${data.report_id}`);
+    subscribeSSE(data.report_id);
+  } catch (e) {
+    setStatus('error', 'Failed to start: ' + e.message);
+    btn.disabled = false;
+  }
+}
+
+/* ── SSE ── */
+function subscribeSSE(reportId) {
+  if (eventSource) eventSource.close();
+  eventSource = new EventSource(`${API}/api/research/${reportId}/stream`);
+
+  eventSource.onmessage = (evt) => {
+    try {
+      const data = JSON.parse(evt.data);
+      appendEvent(data.event || 'message', JSON.stringify(data));
+      handleEvent(data);
+    } catch {}
+  };
+
+  eventSource.onerror = () => {
+    setStatus('error', 'Stream disconnected.');
+    eventSource.close();
+    document.getElementById('run-btn').disabled = false;
+  };
+}
+
+function handleEvent(data) {
+  switch (data.event) {
+    case 'status':
+      setStatus('running', `Status: ${data.status}`);
+      break;
+    case 'agent_start':
+      setStatus('running', `Agent running: ${data.agent_name || ''}…`);
+      break;
+    case 'agent_complete':
+      setStatus('running', `Agent complete: ${data.agent_name || ''}`);
+      break;
+    case 'report_ready':
+      setStatus('done', `Report ready! Risk score: ${data.risk_score ?? '—'} | Citation accuracy: ${data.citation_accuracy_pct ?? '—'}%`);
+      loadFullReport(currentReportId);
+      loadHistory();
+      eventSource && eventSource.close();
+      document.getElementById('run-btn').disabled = false;
+      break;
+    case 'error':
+      setStatus('error', 'Pipeline error: ' + (data.error || 'unknown'));
+      eventSource && eventSource.close();
+      document.getElementById('run-btn').disabled = false;
+      break;
+    case 'done':
+      document.getElementById('run-btn').disabled = false;
+      break;
+  }
+}
+
+/* ── Load full report ── */
+async function loadFullReport(reportId) {
+  try {
+    const r = await fetch(`${API}/api/research/${reportId}/report`);
+    if (!r.ok) return;
+    const data = await r.json();
+
+    document.getElementById('report-location').textContent = data.location || reportId;
+    const risk = data.risk_score ?? null;
+    document.getElementById('risk-score').textContent = risk !== null ? risk.toFixed(1) : '—';
+    const badge = document.getElementById('risk-badge');
+    if (risk !== null) {
+      badge.textContent = `Risk: ${risk.toFixed(0)}`;
+      badge.className = 'risk-badge ' + (risk >= 65 ? 'risk-high' : risk >= 35 ? 'risk-med' : 'risk-low');
+    }
+
+    // Load status for latency & citation
+    const sr = await fetch(`${API}/api/research/${reportId}/status`);
+    if (sr.ok) {
+      const st = await sr.json();
+      document.getElementById('cite-accuracy').textContent = st.citation_accuracy_pct !== null ? st.citation_accuracy_pct.toFixed(1) : '—';
+      document.getElementById('latency').textContent = st.total_latency_ms !== null ? Math.round(st.total_latency_ms) : '—';
+    }
+
+    // Summary
+    const summary = data.summary || data.narrative || data.analysis || '';
+    document.getElementById('report-summary').textContent = summary || 'Report data available. See /docs for full JSON response.';
+
+    // Agent results
+    const ar = await fetch(`${API}/api/research/${reportId}/citations`);
+    if (ar.ok) {
+      const cdata = await ar.json();
+      const agents = {};
+      (cdata.citations || []).forEach(c => { agents[c.agent_name] = (agents[c.agent_name] || 0) + 1; });
+      const list = document.getElementById('agent-list');
+      if (Object.keys(agents).length > 0) {
+        list.innerHTML = Object.entries(agents).map(([name, count]) =>
+          `<div class="agent-row">
+            <span class="agent-name">${name}</span>
+            <span class="agent-status ok">${count} citation${count !== 1 ? 's' : ''}</span>
+          </div>`
+        ).join('');
+      }
+    }
+
+    document.getElementById('report-card').classList.add('visible');
+  } catch (e) {
+    // ignore
+  }
+}
+
+/* ── History ── */
+async function loadHistory() {
+  try {
+    const r = await fetch(`${API}/api/reports?limit=10`);
+    if (!r.ok) return;
+    const data = await r.json();
+    const tbody = document.getElementById('history-tbody');
+    if (!data.reports || data.reports.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">No reports yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.reports.map(rep => `
+      <tr>
+        <td><span class="clickable" onclick="loadFromHistory('${rep.report_id}')">${rep.report_id.slice(0, 8)}…</span></td>
+        <td>${escHtml(rep.location)}</td>
+        <td>${rep.status}</td>
+        <td>${rep.risk_score !== null ? rep.risk_score.toFixed(1) : '—'}</td>
+        <td>${rep.created_at ? new Date(rep.created_at).toLocaleString() : '—'}</td>
+      </tr>`).join('');
+  } catch {}
+}
+
+async function loadFromHistory(reportId) {
+  currentReportId = reportId;
+  await loadFullReport(reportId);
+}
+
+/* ── UI helpers ── */
+function setStatus(cls, msg) {
+  const bar = document.getElementById('status-bar');
+  bar.className = 'status-bar visible ' + cls;
+  bar.textContent = msg;
+}
+
+function clearEventLog() {
+  const log = document.getElementById('event-log');
+  log.innerHTML = '';
+  log.className = 'event-log';
+}
+
+function appendEvent(type, detail) {
+  const log = document.getElementById('event-log');
+  log.className = 'event-log visible';
+  const ts = new Date().toTimeString().slice(0, 8);
+  const entry = document.createElement('div');
+  entry.className = 'event-entry';
+  entry.innerHTML = `<span class="ev-ts">${ts}</span><span class="ev-type">${escHtml(type)}</span>`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
