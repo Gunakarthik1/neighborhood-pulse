@@ -282,7 +282,13 @@ if _FRONTEND.exists():
 
 @app.get("/", include_in_schema=False)
 async def index():
-    return FileResponse(str(_FRONTEND / "index.html"))
+    return FileResponse(
+        str(_FRONTEND / "index.html"),
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate",
+            "Pragma": "no-cache",
+        },
+    )
 
 # In-memory event queues for SSE streaming: report_id → list of queues
 _sse_queues: dict[str, list[asyncio.Queue]] = defaultdict(list)
