@@ -283,7 +283,11 @@ def _generate_recommendations(
         )
     if insurance_req:
         recs.append(
-            f"Flood insurance is federally required for this property. {"Consider the CRS discount (" + str(crs_discount) + "% reduction) when shopping NFIP policies." if crs_discount else "Compare NFIP and private flood insurance carriers for the best rate."}"
+            "Flood insurance is federally required for this property. " + (
+                f"Consider the CRS discount ({crs_discount}% reduction) when shopping NFIP policies."
+                if crs_discount else
+                "Compare NFIP and private flood insurance carriers for the best rate."
+            )
         )
     if len(declarations) >= 4:
         recs.append(
