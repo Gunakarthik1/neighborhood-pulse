@@ -314,8 +314,13 @@ async def analyze_neighborhood(
     stripped = location.strip()
     if len(stripped) < 3:
         raise HTTPException(status_code=422, detail="Location must be at least 3 characters.")
-    if not any(c.isalpha() for c in stripped):
+    letters = [c for c in stripped if c.isalpha()]
+    if not letters:
         raise HTTPException(status_code=422, detail="Location must contain letters — enter a real place name.")
+    # Reject strings with too few vowels (gibberish/profanity heuristic)
+    vowels = sum(1 for c in stripped.lower() if c in "aeiou")
+    if len(letters) >= 5 and vowels / len(letters) < 0.10:
+        raise HTTPException(status_code=422, detail="That doesn't look like a real place. Try 'Austin, TX' or 'Brooklyn, NY'.")
 
     cache_key = stripped.lower()
     cached = _cache_get(cache_key)
@@ -345,6 +350,15 @@ async def analyze_neighborhood(
     safety_raw = composite + _h(f"safe{lat:.2f},{lon:.2f}") % 10 - 5
     overall_safety = max(0, min(100, safety_raw))
 
+    # Score breakdown — so users know exactly where each point comes from
+    aqi_pts = round(max(0, 100 - aqi) / 100 * 25, 1)
+    flood_map = {"Minimal": 25, "Low": 20, "Moderate": 12, "High": 2}
+    flood_pts = flood_map.get(flood_risk, 10)
+    crime_norm = min(1.0, crime["total"] / 5000)
+    crime_pts = round((1 - crime_norm) * 25, 1)
+    school_pts = round(((school - 1) / 9) * 15, 1)
+    walk_pts = round(((walk - 40) / 55) * 10, 1)
+
     result = {
         "location_name": display_name,
         "lat": round(lat, 6),
@@ -360,6 +374,13 @@ async def analyze_neighborhood(
         "walk_score": walk,
         "overall_safety": overall_safety,
         "composite_score": composite,
+        "score_breakdown": {
+            "air_quality":  {"points": aqi_pts,   "max": 25, "label": f"AQI {aqi} ({_aqi_category(aqi)})"},
+            "flood_risk":   {"points": flood_pts,  "max": 25, "label": f"Zone {flood_zone} — {flood_risk} risk"},
+            "crime":        {"points": crime_pts,  "max": 25, "label": f"{crime['total']} incidents/100k residents"},
+            "schools":      {"points": school_pts, "max": 15, "label": f"Rated {school}/10"},
+            "walkability":  {"points": walk_pts,   "max": 10, "label": f"Walk score {walk}/100"},
+        },
         "cached": False,
     }
     _cache_set(cache_key, result)

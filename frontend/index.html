@@ -570,6 +570,16 @@
       <div class="score-verdict" id="score-verdict"></div>
     </div>
 
+    <!-- Score Breakdown -->
+    <div id="score-breakdown" style="display:none; width:100%; max-width:640px; margin: 0 auto 8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:14px; padding:20px 24px;">
+      <div style="font-size:13px; font-weight:600; letter-spacing:.08em; color:var(--text-muted); text-transform:uppercase; margin-bottom:14px;">How this score was calculated</div>
+      <div id="breakdown-rows"></div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08); margin-top:12px; padding-top:12px; display:flex; justify-content:space-between; font-size:13px;">
+        <span style="color:var(--text-muted);">Total</span>
+        <span style="font-weight:700; color:var(--text);" id="breakdown-total">— / 100</span>
+      </div>
+    </div>
+
     <!-- Cards -->
     <div class="cards-grid" id="cards-grid">
       <!-- injected by JS -->
@@ -777,6 +787,33 @@
 
     // Score ring
     animateRing(d.composite_score);
+
+    // Score breakdown
+    if (d.score_breakdown) {
+      const bd = d.score_breakdown;
+      const labels = {
+        air_quality: '💨 Air Quality',
+        flood_risk:  '🌊 Flood Risk',
+        crime:       '🔒 Crime Index',
+        schools:     '🏫 Schools',
+        walkability: '🚶 Walkability',
+      };
+      const rows = Object.entries(bd).map(([k, v]) => {
+        const pct = Math.round((v.points / v.max) * 100);
+        const barColor = pct >= 70 ? '#22c55e' : pct >= 40 ? '#eab308' : '#ef4444';
+        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:130px;font-size:13px;color:var(--text-muted);flex-shrink:0;">${labels[k]||k}</div>
+          <div style="flex:1;background:rgba(255,255,255,0.07);border-radius:4px;height:6px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:4px;transition:width .6s ease;"></div>
+          </div>
+          <div style="width:70px;font-size:12px;color:var(--text-muted);text-align:right;">${v.points} / ${v.max} pts</div>
+          <div style="width:130px;font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(v.label)}">${escHtml(v.label)}</div>
+        </div>`;
+      }).join('');
+      document.getElementById('breakdown-rows').innerHTML = rows;
+      document.getElementById('breakdown-total').textContent = `${d.composite_score} / 100`;
+      document.getElementById('score-breakdown').style.display = 'block';
+    }
 
     // Cards data
     const aColor = aqiColor(d.aqi);
