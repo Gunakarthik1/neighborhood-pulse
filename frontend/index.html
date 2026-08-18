@@ -843,9 +843,9 @@
 
     if (evt === 'report_ready' || evt === 'complete' || evt === 'done') {
       setSynthesis(false);
-      // Mark any still-running agents as done
+      // Mark any agents that didn't get individual events as done
       Object.keys(agentState).forEach(k => {
-        if (agentState[k].status === 'running') setAgentStatus(k, 'done', humanizeDone(k, {}));
+        if (agentState[k].status !== 'done') setAgentStatus(k, 'done', humanizeDone(k, {}));
       });
       loadFullReport(currentReportId);
       loadHistory();
