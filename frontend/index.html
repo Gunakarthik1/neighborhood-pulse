@@ -763,9 +763,38 @@
   })();
 
   /* ── Start research ── */
+  function validateLocation(loc) {
+    if (!loc || loc.length < 2) return 'Please enter a neighborhood, city, or address.';
+    if (loc.length > 120) return 'That\'s too long — try a shorter location name.';
+    // Must contain at least one letter
+    if (!/[a-zA-Z]/.test(loc)) return 'Please enter a real location name.';
+    // Block obvious non-locations (pure numbers, single chars repeated, etc.)
+    if (/^[\d\s\W]+$/.test(loc)) return 'Please enter a neighborhood, city, or address.';
+    // Basic profanity / gibberish gate — reject strings with no vowels over 5 chars
+    const alpha = loc.replace(/[^a-zA-Z]/g, '');
+    const vowels = (alpha.match(/[aeiouAEIOU]/g) || []).length;
+    if (alpha.length > 5 && vowels === 0) return 'That doesn\'t look like a location — try something like "Austin, TX".';
+    return null;
+  }
+
+  function showInputError(msg) {
+    const input = document.getElementById('location-input');
+    input.style.borderColor = '#c74634';
+    const existing = document.getElementById('input-error');
+    if (existing) existing.remove();
+    const err = document.createElement('p');
+    err.id = 'input-error';
+    err.style.cssText = 'color:#c74634;font-size:13px;margin-top:6px;text-align:center';
+    err.textContent = msg;
+    input.closest('form') ? input.closest('form').after(err) : input.parentNode.after(err);
+    setTimeout(() => { err.remove(); input.style.borderColor = ''; }, 4000);
+  }
+
   async function startResearch() {
     const location = document.getElementById('location-input').value.trim();
-    if (!location) {
+    const validationError = validateLocation(location);
+    if (validationError) {
+      showInputError(validationError);
       document.getElementById('location-input').focus();
       return;
     }
@@ -839,10 +868,14 @@
 
     if (evt === 'synthesis_start' || evt === 'synthesizing') {
       setSynthesis(true);
+      const label = document.getElementById('synthesis-label');
+      if (label) label.textContent = 'Synthesizing risk report…';
     }
 
     if (evt === 'report_ready' || evt === 'complete' || evt === 'done') {
       setSynthesis(false);
+      const label = document.getElementById('synthesis-label');
+      if (label) label.textContent = 'Report ready. Loading…';
       // Mark any agents that didn't get individual events as done
       Object.keys(agentState).forEach(k => {
         if (agentState[k].status !== 'done') setAgentStatus(k, 'done', humanizeDone(k, {}));
@@ -926,13 +959,24 @@
 
   /* ── Load full report ── */
   async function loadFullReport(reportId) {
-    try {
-      const r = await fetch(`${API}/api/research/${reportId}/report`);
-      if (!r.ok) return;
-      const data = await r.json();
-
-      renderReport(data);
-    } catch {}
+    // Try up to 3 times with backoff — the DB write and SSE event can race
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        if (attempt > 0) await new Promise(r => setTimeout(r, attempt * 800));
+        const r = await fetch(`${API}/api/research/${reportId}/report`);
+        if (r.ok) {
+          const data = await r.json();
+          renderReport(data);
+          return;
+        }
+        if (r.status === 404 || r.status === 500) break; // non-retryable
+      } catch {}
+    }
+    // Show a friendly error in the synthesis row
+    const label = document.getElementById('synthesis-label');
+    if (label) label.textContent = 'Report ready — scroll down to see it, or refresh the page.';
+    // Try loading via history as fallback
+    loadHistory();
   }
 
   function renderReport(data) {
