@@ -162,6 +162,80 @@ async def _geocode(location: str) -> Optional[tuple[float, float, str]]:
             return None
 
 
+async def _fetch_recent_events(city_name: str) -> list[dict]:
+    """
+    Fetch recent local news headlines (crime, fire, flood, weather, accident)
+    for the given city from Google News RSS. No API key required.
+    Returns up to 4 relevant items: [{title, source, published, url}]
+    """
+    KEYWORDS = ["crime", "fire", "shooting", "flood", "storm", "arrest", "accident",
+                "murder", "robbery", "tornado", "earthquake", "evacuation", "emergency"]
+    query = f"{city_name} crime OR fire OR flood OR storm OR emergency"
+    rss_url = (
+        f"https://news.google.com/rss/search?q={httpx.URL(query)}"
+        f"&hl=en-US&gl=US&ceid=US:en"
+    )
+    # Encode properly
+    import urllib.parse
+    encoded_q = urllib.parse.quote(query)
+    rss_url = f"https://news.google.com/rss/search?q={encoded_q}&hl=en-US&gl=US&ceid=US:en"
+
+    async with httpx.AsyncClient(timeout=8.0) as client:
+        try:
+            r = await client.get(rss_url, headers={"User-Agent": "NeighborhoodPulse/1.0"})
+            r.raise_for_status()
+            text = r.text
+
+            # Parse RSS XML manually (no lxml needed)
+            import re as _re
+            items = _re.findall(r"<item>(.*?)</item>", text, _re.DOTALL)
+            results = []
+            for item in items[:12]:
+                title_m = _re.search(r"<title><!\[CDATA\[(.*?)\]\]></title>", item) or _re.search(r"<title>(.*?)</title>", item)
+                link_m  = _re.search(r"<link>(.*?)</link>", item)
+                src_m   = _re.search(r"<source[^>]*>(.*?)</source>", item)
+                pub_m   = _re.search(r"<pubDate>(.*?)</pubDate>", item)
+
+                title = (title_m.group(1) if title_m else "").strip()
+                link  = (link_m.group(1) if link_m else "").strip()
+                source = (src_m.group(1) if src_m else "").strip()
+                pub   = (pub_m.group(1) if pub_m else "").strip()
+
+                if not title:
+                    continue
+
+                # Only include items that mention a safety/event keyword
+                title_lower = title.lower()
+                if any(kw in title_lower for kw in KEYWORDS):
+                    # Convert pub date to relative time
+                    try:
+                        from email.utils import parsedate_to_datetime
+                        dt = parsedate_to_datetime(pub)
+                        age_h = (datetime.now(timezone.utc) - dt).total_seconds() / 3600
+                        if age_h < 24:
+                            rel = f"{int(age_h)}h ago"
+                        elif age_h < 168:
+                            rel = f"{int(age_h/24)}d ago"
+                        else:
+                            rel = f"{int(age_h/168)}w ago"
+                    except Exception:
+                        rel = ""
+
+                    results.append({
+                        "title": title,
+                        "source": source,
+                        "published": rel,
+                        "url": link,
+                    })
+                    if len(results) >= 4:
+                        break
+
+            return results
+        except Exception as exc:
+            logger.warning(f"Recent events fetch failed for '{city_name}': {exc}")
+            return []
+
+
 async def _fetch_aqi(lat: float, lon: float) -> int:
     """Fetch current US AQI from Open-Meteo air quality API."""
     url = "https://air-quality-api.open-meteo.com/v1/air-quality"
@@ -336,12 +410,16 @@ async def analyze_neighborhood(
         )
     lat, lon, display_name = geo
 
-    # Fetch real AQI and mock data concurrently
-    aqi = await _fetch_aqi(lat, lon)
+    # Fetch real AQI and recent news concurrently
+    city_name = display_name.split(",")[0].strip()
+    aqi, recent_events = await asyncio.gather(
+        _fetch_aqi(lat, lon),
+        _fetch_recent_events(city_name),
+    )
 
     # Mock deterministic data
     flood_zone, flood_risk = _flood_zone(lat, lon)
-    crime = _crime_data(f"{display_name.split(',')[0].lower()}")
+    crime = _crime_data(city_name.lower())
     school = _school_rating(lat, lon)
     walk = _walk_score(lat, lon)
     composite = _composite_score(aqi, flood_risk, crime, school, walk)
@@ -381,6 +459,7 @@ async def analyze_neighborhood(
             "schools":      {"points": school_pts, "max": 15, "label": f"Rated {school}/10"},
             "walkability":  {"points": walk_pts,   "max": 10, "label": f"Walk score {walk}/100"},
         },
+        "recent_events": recent_events,
         "cached": False,
     }
     _cache_set(cache_key, result)

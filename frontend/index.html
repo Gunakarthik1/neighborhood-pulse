@@ -580,6 +580,12 @@
       </div>
     </div>
 
+    <!-- Recent Events -->
+    <div id="recent-events-section" style="display:none; width:100%; max-width:640px; margin: 0 auto 8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:14px; padding:20px 24px;">
+      <div style="font-size:13px; font-weight:600; letter-spacing:.08em; color:var(--text-muted); text-transform:uppercase; margin-bottom:14px;">📰 Recent Local Reports</div>
+      <div id="recent-events-rows"></div>
+    </div>
+
     <!-- Cards -->
     <div class="cards-grid" id="cards-grid">
       <!-- injected by JS -->
@@ -813,6 +819,21 @@
       document.getElementById('breakdown-rows').innerHTML = rows;
       document.getElementById('breakdown-total').textContent = `${d.composite_score} / 100`;
       document.getElementById('score-breakdown').style.display = 'block';
+    }
+
+    // Recent events
+    const evSection = document.getElementById('recent-events-section');
+    const evRows = document.getElementById('recent-events-rows');
+    if (d.recent_events && d.recent_events.length > 0) {
+      evRows.innerHTML = d.recent_events.map(ev => `
+        <a href="${escHtml(ev.url)}" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none; margin-bottom:12px; padding:10px 12px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+          <div style="font-size:13px; color:var(--text); line-height:1.4; margin-bottom:4px;">${escHtml(ev.title)}</div>
+          <div style="font-size:11px; color:var(--text-dim);">${escHtml(ev.source)}${ev.published ? ' &middot; ' + escHtml(ev.published) : ''}</div>
+        </a>
+      `).join('');
+      evSection.style.display = 'block';
+    } else {
+      evSection.style.display = 'none';
     }
 
     // Cards data
