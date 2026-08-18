@@ -3,1212 +3,864 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeighborhoodPulse — Know the risks before you sign anything.</title>
+  <title>NeighborhoodPulse — Know Your Neighborhood</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --paper:        #FAF9F6;
-      --ink:          #18181B;
-      --stone:        #71717A;
-      --border:       rgba(24,24,27,0.10);
-      --accent:       #C2410C;
-      --accent-light: rgba(194,65,12,0.08);
-      --green:        #15803D;
-      --green-bg:     rgba(21,128,61,0.08);
-      --amber:        #B45309;
-      --amber-bg:     rgba(180,83,9,0.08);
-      --red:          #B91C1C;
-      --red-bg:       rgba(185,28,28,0.08);
-      --orange:       #C2410C;
-      --orange-bg:    rgba(194,65,12,0.08);
+      --bg-from:    #0f0f1a;
+      --bg-to:      #1a1a2e;
+      --purple:     #7c3aed;
+      --purple-lt:  #9d5cf0;
+      --blue:       #3b82f6;
+      --blue-lt:    #60a5fa;
+      --glass:      rgba(255,255,255,0.05);
+      --glass-bd:   rgba(255,255,255,0.10);
+      --glass-hover:rgba(255,255,255,0.08);
+      --text:       #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim:   #64748b;
+      --aqi-green:  #22c55e;
+      --aqi-yellow: #eab308;
+      --aqi-orange: #f97316;
+      --aqi-red:    #ef4444;
+      --error:      #f87171;
     }
 
     html, body {
-      height: 100%;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      min-height: 100%;
+      background: linear-gradient(135deg, var(--bg-from) 0%, var(--bg-to) 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       font-size: 15px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Header ── */
-    .header {
-      background: var(--paper);
-      border-bottom: 1px solid var(--border);
-      padding: 0 40px;
-      height: 60px;
+    /* ── Layout ── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 80px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      width: 100%;
+      max-width: 680px;
+      text-align: center;
+      padding-top: 80px;
+      padding-bottom: 48px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      border-radius: 10px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(8px);
+      justify-content: center;
     }
 
-    .header-wordmark {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 22px;
-      color: var(--ink);
+    .brand-name {
+      font-size: 20px;
+      font-weight: 700;
       letter-spacing: -0.02em;
-    }
-
-    .header-tagline {
-      font-size: 13px;
-      color: var(--stone);
-      font-weight: 400;
-      padding-left: 16px;
-      border-left: 1px solid var(--border);
-      margin-left: 4px;
-    }
-
-    /* ── Page layout ── */
-    .page { max-width: 740px; margin: 0 auto; padding: 64px 24px 96px; }
-
-    /* ── Hero search ── */
-    .hero {
-      text-align: center;
-      margin-bottom: 56px;
-    }
-
-    .hero-eyebrow {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 16px;
+      background: linear-gradient(90deg, var(--purple-lt), var(--blue-lt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .hero-headline {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-size: clamp(32px, 5vw, 48px);
-      color: var(--ink);
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-      margin-bottom: 12px;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .hero-sub {
-      font-size: 16px;
-      color: var(--stone);
-      margin-bottom: 40px;
+      font-size: 17px;
+      color: var(--text-muted);
       max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 0 auto 40px;
+      line-height: 1.65;
+    }
+
+    /* ── Search ── */
+    .search-wrap {
+      background: var(--glass);
+      border: 1px solid var(--glass-bd);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
     }
 
     .search-row {
       display: flex;
       gap: 10px;
-      max-width: 560px;
-      margin: 0 auto 20px;
     }
 
     .search-input {
       flex: 1;
-      padding: 14px 18px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 15px;
-      color: var(--ink);
-      background: #fff;
+      padding: 14px 20px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--text);
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .search-input::placeholder { color: var(--stone); }
+    .search-input::placeholder { color: var(--text-dim); }
 
     .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-light);
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.20);
     }
 
-    .btn-primary {
+    .btn-analyze {
       padding: 14px 24px;
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--purple), #6d28d9);
       color: #fff;
       border: none;
-      border-radius: 8px;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      border-radius: 12px;
+      font-family: inherit;
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: background 0.15s, transform 0.1s;
+      transition: opacity 0.15s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.40);
     }
 
-    .btn-primary:hover { background: #a33509; }
-    .btn-primary:active { transform: scale(0.98); }
-    .btn-primary:disabled { background: var(--stone); cursor: not-allowed; transform: none; }
+    .btn-analyze:hover { opacity: 0.90; box-shadow: 0 6px 28px rgba(124,58,237,0.55); }
+    .btn-analyze:active { transform: scale(0.97); }
+    .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     .example-pills {
       display: flex;
       gap: 8px;
       justify-content: center;
       flex-wrap: wrap;
+      margin-top: 12px;
     }
 
     .pill {
       padding: 6px 14px;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: 999px;
       font-size: 13px;
       font-weight: 500;
-      color: var(--stone);
+      color: var(--text-muted);
       background: transparent;
       cursor: pointer;
       transition: border-color 0.15s, color 0.15s, background 0.15s;
     }
 
     .pill:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-light);
+      border-color: var(--purple);
+      color: var(--purple-lt);
+      background: rgba(124,58,237,0.10);
     }
 
-    /* ── Divider ── */
-    .divider { height: 1px; background: var(--border); margin: 40px 0; }
+    /* ── Error banner ── */
+    .error-banner {
+      width: 100%;
+      max-width: 680px;
+      display: none;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.30);
+      border-radius: 12px;
+      padding: 14px 20px;
+      color: var(--error);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .error-banner.visible { display: block; }
 
-    /* ── Section label ── */
-    .section-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: var(--stone);
-      margin-bottom: 20px;
+    /* ── Loading ── */
+    .loading-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 48px 0;
+    }
+    .loading-wrap.visible { display: flex; }
+
+    .loading-label {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
     }
 
-    /* ── Agent progress ── */
-    #progress-section { display: none; margin-bottom: 40px; }
-    #progress-section.visible { display: block; }
+    /* 3-dot pulse */
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      animation: dotPulse 1.4s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
 
-    .agents-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 20px; }
+    @keyframes dotPulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40%            { transform: scale(1);   opacity: 1; }
+    }
 
-    .agent-row {
+    /* ── Results area ── */
+    .results {
+      display: none;
+      width: 100%;
+      max-width: 860px;
+      animation: fadeSlideUp 0.5s ease both;
+    }
+    .results.visible { display: block; }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Location bar ── */
+    .location-bar {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 16px 18px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      transition: border-color 0.2s;
+      gap: 12px;
+      background: var(--glass);
+      border: 1px solid var(--glass-bd);
+      border-radius: 14px;
+      padding: 14px 20px;
+      margin-bottom: 32px;
+      backdrop-filter: blur(12px);
     }
 
-    .agent-row.running { border-color: rgba(194,65,12,0.30); }
-    .agent-row.done { border-color: rgba(21,128,61,0.25); }
-    .agent-row.degraded { border-color: rgba(180,83,9,0.30); }
-
-    .agent-icon-wrap {
-      width: 36px;
-      height: 36px;
+    .loc-pin {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      background: var(--paper);
-      color: var(--stone);
-      transition: background 0.2s, color 0.2s;
     }
 
-    .agent-row.running .agent-icon-wrap { background: var(--accent-light); color: var(--accent); }
-    .agent-row.done .agent-icon-wrap { background: var(--green-bg); color: var(--green); }
-    .agent-row.degraded .agent-icon-wrap { background: var(--amber-bg); color: var(--amber); }
+    .loc-info { flex: 1; min-width: 0; }
+    .loc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px; }
+    .loc-name { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .loc-coords { font-size: 12px; color: var(--text-muted); }
 
-    .agent-info { flex: 1; min-width: 0; }
-    .agent-name { font-weight: 600; font-size: 14px; color: var(--ink); }
-    .agent-summary { font-size: 13px; color: var(--stone); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    .agent-badge {
+    /* ── Score ring ── */
+    .score-section {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 999px;
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
-
-    .badge-waiting { background: var(--paper); color: var(--stone); border: 1px solid var(--border); }
-    .badge-running { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(194,65,12,0.20); }
-    .badge-done { background: var(--green-bg); color: var(--green); border: 1px solid rgba(21,128,61,0.20); }
-    .badge-degraded { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(180,83,9,0.20); }
-
-    @keyframes pulse-ring {
-      0%   { box-shadow: 0 0 0 0 rgba(194,65,12,0.35); }
-      70%  { box-shadow: 0 0 0 6px rgba(194,65,12,0); }
-      100% { box-shadow: 0 0 0 0 rgba(194,65,12,0); }
-    }
-
-    .badge-running .pulse-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse-ring 1.4s ease-out infinite;
-    }
-
-    .synthesis-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 18px;
-      border: 1px dashed var(--border);
-      border-radius: 8px;
-      color: var(--stone);
-      font-size: 14px;
-    }
-
-    .synthesis-row.active { border-color: rgba(194,65,12,0.30); color: var(--ink); }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner {
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      flex-shrink: 0;
-    }
-
-    /* ── Risk Report ── */
-    #report-section { display: none; }
-    #report-section.visible { display: block; }
-
-    .score-block {
-      text-align: center;
       margin-bottom: 40px;
-      padding: 40px 24px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 12px;
     }
 
-    .score-number {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 96px;
-      line-height: 1;
-      letter-spacing: -0.04em;
-      font-weight: 400;
-      margin-bottom: 8px;
-    }
-
-    .score-low    { color: var(--green); }
-    .score-amber  { color: var(--amber); }
-    .score-orange { color: var(--orange); }
-    .score-red    { color: var(--red); }
-
-    .score-label {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: var(--stone);
+    .score-ring-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
       margin-bottom: 16px;
     }
 
-    .score-prose {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--ink);
-      max-width: 460px;
-      margin: 0 auto;
+    .score-ring-wrap svg {
+      transform: rotate(-90deg);
     }
 
-    .exec-summary {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-style: italic;
-      font-size: 20px;
-      line-height: 1.5;
-      color: var(--ink);
-      margin-bottom: 40px;
-      padding: 0 4px;
+    .score-ring-track {
+      fill: none;
+      stroke: rgba(255,255,255,0.08);
+      stroke-width: 10;
     }
 
-    /* ── Risk breakdown ── */
-    .breakdown-grid {
+    .score-ring-fill {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 408; /* 2π*65 */
+      stroke-dashoffset: 408;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1), stroke 0.5s;
+    }
+
+    .score-center {
+      position: absolute;
+      inset: 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 40px;
-    }
-
-    .factor-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .factor-row:last-child { border-bottom: none; }
-
-    .factor-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--ink);
-      width: 120px;
-      flex-shrink: 0;
-    }
-
-    .factor-weight {
-      font-size: 11px;
-      color: var(--stone);
-      width: 36px;
-      flex-shrink: 0;
-    }
-
-    .factor-bar-wrap {
-      flex: 1;
-      height: 6px;
-      background: var(--paper);
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-
-    .factor-bar {
-      height: 100%;
-      border-radius: 999px;
-      transition: width 0.6s ease;
-    }
-
-    .factor-score {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--ink);
-      width: 30px;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    /* ── Collapsible sections ── */
-    .collapsible {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 8px;
-      background: #fff;
-      overflow: hidden;
-    }
-
-    .collapsible-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 20px;
-      cursor: pointer;
-      user-select: none;
-      gap: 12px;
-    }
-
-    .collapsible-header:hover { background: var(--paper); }
-
-    .collapsible-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .collapsible-chevron {
-      color: var(--stone);
-      transition: transform 0.2s;
-      flex-shrink: 0;
-    }
-
-    .collapsible.open .collapsible-chevron { transform: rotate(180deg); }
-
-    .collapsible-body {
-      display: none;
-      padding: 0 20px 20px;
-      border-top: 1px solid var(--border);
-    }
-
-    .collapsible.open .collapsible-body { display: block; }
-
-    .collapsible-body p {
-      font-size: 14px;
-      line-height: 1.75;
-      color: var(--ink);
-      margin-top: 16px;
-    }
-
-    .collapsible-body p + p { margin-top: 12px; }
-
-    /* ── Recommendations ── */
-    .recs-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 40px;
-    }
-
-    .rec-item {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-    }
-
-    .rec-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      margin-top: 1px;
     }
 
-    .rec-text {
+    .score-num {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .score-out {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .score-title {
       font-size: 14px;
-      line-height: 1.65;
-      color: var(--ink);
-      padding-top: 3px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
     }
 
-    /* ── Citations ── */
-    .cite-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding-top: 16px;
+    .score-verdict {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
     }
 
-    .cite-item {
-      display: flex;
-      gap: 10px;
-      font-size: 13px;
-      color: var(--stone);
-      align-items: flex-start;
-      line-height: 1.5;
+    /* ── Cards grid ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
     }
 
-    .cite-num {
+    @media (max-width: 700px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 460px) {
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--glass-bd);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.5s ease, transform 0.5s ease, background 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      background: var(--glass-hover);
+      border-color: rgba(255,255,255,0.16);
+      transform: translateY(-2px);
+    }
+
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .card-label {
       font-size: 11px;
       font-weight: 700;
-      color: var(--accent);
-      min-width: 20px;
-      padding-top: 1px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
     }
 
-    .cite-item a {
-      color: var(--accent);
-      text-decoration: none;
+    .card-value {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 4px;
     }
 
-    .cite-item a:hover { text-decoration: underline; }
-
-    /* ── Past reports ── */
-    #history-section { margin-top: 56px; }
-
-    .past-reports-list {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .card-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
     }
 
-    .past-report-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 18px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-    }
+    /* AQI color classes */
+    .aqi-good     { color: var(--aqi-green); }
+    .aqi-moderate { color: var(--aqi-yellow); }
+    .aqi-usg      { color: var(--aqi-orange); }
+    .aqi-bad      { color: var(--aqi-red); }
 
-    .past-report-row:hover {
-      border-color: rgba(194,65,12,0.30);
-      background: var(--accent-light);
-    }
+    .flood-high   { color: var(--aqi-red); }
+    .flood-mod    { color: var(--aqi-orange); }
+    .flood-low    { color: var(--aqi-yellow); }
+    .flood-min    { color: var(--aqi-green); }
 
-    .past-report-location {
-      flex: 1;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--ink);
-    }
+    /* ── Crime bar chart ── */
+    .crime-bars { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .crime-bar-row { display: flex; align-items: center; gap: 8px; }
+    .crime-bar-label { font-size: 11px; color: var(--text-muted); width: 56px; flex-shrink: 0; }
+    .crime-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+    .crime-bar-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--blue)); transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+    .crime-bar-num { font-size: 11px; color: var(--text-muted); width: 36px; text-align: right; flex-shrink: 0; }
 
-    .past-report-score {
-      font-size: 13px;
-      font-weight: 700;
+    /* ── Stars ── */
+    .stars { display: flex; gap: 3px; margin-top: 6px; }
+    .star-filled { color: #facc15; }
+    .star-empty  { color: rgba(255,255,255,0.15); }
+
+    /* ── Walk score pill ── */
+    .walk-pill {
+      display: inline-block;
       padding: 3px 10px;
       border-radius: 999px;
-    }
-
-    .past-report-time {
       font-size: 12px;
-      color: var(--stone);
+      font-weight: 600;
+      margin-top: 6px;
     }
 
-    .empty-state {
-      padding: 32px 20px;
-      text-align: center;
-      color: var(--stone);
-      font-size: 14px;
-      background: #fff;
-      border: 1px dashed var(--border);
-      border-radius: 8px;
-    }
+    .walk-car   { background: rgba(239,68,68,0.15);  color: #f87171; }
+    .walk-some  { background: rgba(234,179,8,0.15);  color: #facc15; }
+    .walk-bikeable { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .walk-able  { background: rgba(34,197,94,0.15);  color: #4ade80; }
+    .walk-walker{ background: rgba(124,58,237,0.20); color: #c4b5fd; }
 
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    /* ── Cached badge ── */
+    .cached-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      padding: 3px 10px;
+      margin-left: 8px;
+    }
   </style>
 </head>
 <body>
 
-<!-- Header -->
-<header class="header">
-  <span class="header-wordmark">NeighborhoodPulse</span>
-  <span class="header-tagline">Know the risks before you sign anything.</span>
-</header>
-
 <main class="page">
 
-  <!-- Hero search -->
+  <!-- Hero -->
   <section class="hero">
-    <p class="hero-eyebrow">Multi-agent risk research</p>
-    <h1 class="hero-headline">Know the risks before<br>you sign anything.</h1>
-    <p class="hero-sub">Enter a city or address. Three independent agents research flood zones, zoning codes, and climate exposure — then synthesize a risk score.</p>
-
-    <div class="search-row">
-      <input
-        class="search-input"
-        id="location-input"
-        type="text"
-        placeholder="Enter a city or address…"
-        autocomplete="off"
-        onkeydown="if(event.key==='Enter') startResearch()"
-      />
-      <button class="btn-primary" id="run-btn" onclick="startResearch()">
-        <i data-lucide="search" style="width:16px;height:16px"></i>
-        Research this neighborhood
-      </button>
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <span class="brand-name">NeighborhoodPulse</span>
     </div>
 
-    <div class="example-pills">
-      <button class="pill" onclick="fillAndRun('Austin, TX')">Austin, TX</button>
-      <button class="pill" onclick="fillAndRun('Miami, FL')">Miami, FL</button>
-      <button class="pill" onclick="fillAndRun('Denver, CO')">Denver, CO</button>
-      <button class="pill" onclick="fillAndRun('Seattle, WA')">Seattle, WA</button>
+    <h1 class="hero-headline">Know before you move.</h1>
+    <p class="hero-sub">Enter any city, neighborhood, or address. Get real air quality data, flood risk, crime stats, school ratings, and a composite livability score — instantly.</p>
+
+    <div class="search-wrap">
+      <div class="search-row">
+        <input
+          class="search-input"
+          id="location-input"
+          type="text"
+          placeholder="Try &quot;San Francisco, CA&quot; or &quot;Austin, TX&quot;"
+          autocomplete="off"
+          onkeydown="if(event.key==='Enter') analyze()"
+        />
+        <button class="btn-analyze" id="run-btn" onclick="analyze()">
+          Analyze
+        </button>
+      </div>
+      <div class="example-pills">
+        <button class="pill" onclick="fillAndRun('Austin, TX')">Austin, TX</button>
+        <button class="pill" onclick="fillAndRun('Miami, FL')">Miami, FL</button>
+        <button class="pill" onclick="fillAndRun('Denver, CO')">Denver, CO</button>
+        <button class="pill" onclick="fillAndRun('Seattle, WA')">Seattle, WA</button>
+        <button class="pill" onclick="fillAndRun('Brooklyn, NY')">Brooklyn, NY</button>
+      </div>
     </div>
+
   </section>
 
-  <!-- Agent progress -->
-  <section id="progress-section">
-    <p class="section-label">Live agent progress</p>
+  <!-- Error banner -->
+  <div class="error-banner" id="error-banner"></div>
 
-    <div class="agents-list">
-      <!-- FEMA -->
-      <div class="agent-row" id="agent-fema">
-        <div class="agent-icon-wrap" id="agent-fema-icon">
-          <i data-lucide="droplets" style="width:18px;height:18px"></i>
-        </div>
-        <div class="agent-info">
-          <div class="agent-name">FEMA Flood Data</div>
-          <div class="agent-summary" id="agent-fema-summary">Waiting to start…</div>
-        </div>
-        <div class="agent-badge badge-waiting" id="agent-fema-badge">
-          <span>Waiting</span>
+  <!-- Loading -->
+  <div class="loading-wrap" id="loading-wrap">
+    <div class="dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <span class="loading-label" id="loading-label">Analyzing neighborhood…</span>
+  </div>
+
+  <!-- Results -->
+  <div class="results" id="results">
+
+    <!-- Location bar -->
+    <div class="location-bar">
+      <div class="loc-pin">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+      <div class="loc-info">
+        <div class="loc-label">Analyzing</div>
+        <div class="loc-name" id="loc-name">—</div>
+        <div class="loc-coords" id="loc-coords"></div>
+      </div>
+      <span class="cached-badge" id="cached-badge" style="display:none">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Cached
+      </span>
+    </div>
+
+    <!-- Score ring -->
+    <div class="score-section">
+      <div class="score-ring-wrap">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle class="score-ring-track" cx="80" cy="80" r="65"/>
+          <circle class="score-ring-fill" id="score-ring-fill" cx="80" cy="80" r="65"/>
+        </svg>
+        <div class="score-center">
+          <div class="score-num" id="score-num">—</div>
+          <div class="score-out">/ 100</div>
         </div>
       </div>
-
-      <!-- Zoning -->
-      <div class="agent-row" id="agent-zoning">
-        <div class="agent-icon-wrap" id="agent-zoning-icon">
-          <i data-lucide="map" style="width:18px;height:18px"></i>
-        </div>
-        <div class="agent-info">
-          <div class="agent-name">Zoning & Land Use</div>
-          <div class="agent-summary" id="agent-zoning-summary">Waiting to start…</div>
-        </div>
-        <div class="agent-badge badge-waiting" id="agent-zoning-badge">
-          <span>Waiting</span>
-        </div>
-      </div>
-
-      <!-- Climate -->
-      <div class="agent-row" id="agent-climate">
-        <div class="agent-icon-wrap" id="agent-climate-icon">
-          <i data-lucide="thermometer" style="width:18px;height:18px"></i>
-        </div>
-        <div class="agent-info">
-          <div class="agent-name">Climate Risk</div>
-          <div class="agent-summary" id="agent-climate-summary">Waiting to start…</div>
-        </div>
-        <div class="agent-badge badge-waiting" id="agent-climate-badge">
-          <span>Waiting</span>
-        </div>
-      </div>
+      <div class="score-title">Composite Livability Score</div>
+      <div class="score-verdict" id="score-verdict"></div>
     </div>
 
-    <!-- Synthesis -->
-    <div class="synthesis-row" id="synthesis-row">
-      <div class="spinner" id="synthesis-spinner" style="display:none"></div>
-      <i data-lucide="layers" style="width:16px;height:16px;flex-shrink:0" id="synthesis-icon"></i>
-      <span id="synthesis-label">Synthesis agent will compile the report once all agents complete.</span>
-    </div>
-  </section>
-
-  <!-- Risk report -->
-  <section id="report-section">
-
-    <!-- Risk score block -->
-    <div class="score-block">
-      <div class="score-label">Overall Risk Score</div>
-      <div class="score-number" id="score-number">—</div>
-      <div class="score-prose" id="score-prose"></div>
-    </div>
-
-    <!-- Executive summary -->
-    <p class="exec-summary" id="exec-summary"></p>
-
-    <!-- Risk breakdown -->
-    <p class="section-label">Risk breakdown</p>
-    <div class="breakdown-grid" id="breakdown-grid">
-      <!-- rows injected by JS -->
-    </div>
-
-    <!-- Three section collapsibles -->
-    <p class="section-label">Detailed findings</p>
-    <div id="sections-container">
+    <!-- Cards -->
+    <div class="cards-grid" id="cards-grid">
       <!-- injected by JS -->
     </div>
 
-    <!-- Recommendations -->
-    <p class="section-label" style="margin-top:32px">Recommendations</p>
-    <div class="recs-list" id="recs-list">
-      <!-- injected by JS -->
-    </div>
-
-    <!-- Citations collapsible -->
-    <div class="collapsible" id="citations-collapsible" style="margin-top:8px">
-      <div class="collapsible-header" onclick="toggleCollapsible(this.closest('.collapsible'))">
-        <span class="collapsible-title" id="citations-title">Sources &amp; Citations</span>
-        <i data-lucide="chevron-down" class="collapsible-chevron" style="width:18px;height:18px"></i>
-      </div>
-      <div class="collapsible-body">
-        <div class="cite-list" id="cite-list">
-          <p style="color:var(--stone);font-size:13px">No citations available.</p>
-        </div>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- Past reports -->
-  <section id="history-section">
-    <div class="divider"></div>
-    <p class="section-label">Recent reports</p>
-    <div class="past-reports-list" id="past-reports-list">
-      <div class="empty-state">No recent reports yet. Search a location to get started.</div>
-    </div>
-  </section>
+  </div>
 
 </main>
 
 <script>
-  // Init Lucide icons
-  lucide.createIcons();
-
   const API = '';
-  let currentReportId = null;
-  let eventSource = null;
 
-  // Agent state tracking
-  const agentState = {
-    fema: { status: 'waiting', name: 'FEMA Flood Data' },
-    zoning: { status: 'waiting', name: 'Zoning & Land Use' },
-    climate: { status: 'waiting', name: 'Climate Risk' },
-  };
-
-  // Map backend agent names → our keys
-  function agentKey(name) {
-    if (!name) return null;
-    const n = name.toLowerCase();
-    if (n.includes('fema') || n.includes('flood')) return 'fema';
-    if (n.includes('zon')) return 'zoning';
-    if (n.includes('clim') || n.includes('heat') || n.includes('weather')) return 'climate';
-    return null;
-  }
-
-  /* ── Init ── */
-  (async function init() {
-    await loadHistory();
-  })();
-
-  /* ── Start research ── */
-  function validateLocation(loc) {
-    if (!loc || loc.length < 2) return 'Please enter a neighborhood, city, or address.';
-    if (loc.length > 120) return 'That\'s too long — try a shorter location name.';
-    // Must contain at least one letter
-    if (!/[a-zA-Z]/.test(loc)) return 'Please enter a real location name.';
-    // Block obvious non-locations (pure numbers, single chars repeated, etc.)
-    if (/^[\d\s\W]+$/.test(loc)) return 'Please enter a neighborhood, city, or address.';
-    // Basic profanity / gibberish gate — reject strings with no vowels over 5 chars
-    const alpha = loc.replace(/[^a-zA-Z]/g, '');
-    const vowels = (alpha.match(/[aeiouAEIOU]/g) || []).length;
-    if (alpha.length > 5 && vowels === 0) return 'That doesn\'t look like a location — try something like "Austin, TX".';
-    return null;
-  }
-
-  function showInputError(msg) {
-    const input = document.getElementById('location-input');
-    input.style.borderColor = '#c74634';
-    const existing = document.getElementById('input-error');
-    if (existing) existing.remove();
-    const err = document.createElement('p');
-    err.id = 'input-error';
-    err.style.cssText = 'color:#c74634;font-size:13px;margin-top:6px;text-align:center';
-    err.textContent = msg;
-    input.closest('form') ? input.closest('form').after(err) : input.parentNode.after(err);
-    setTimeout(() => { err.remove(); input.style.borderColor = ''; }, 4000);
-  }
-
-  async function startResearch() {
-    const location = document.getElementById('location-input').value.trim();
-    const validationError = validateLocation(location);
-    if (validationError) {
-      showInputError(validationError);
-      document.getElementById('location-input').focus();
-      return;
-    }
-
-    const btn = document.getElementById('run-btn');
-    btn.disabled = true;
-
-    // Reset agents
-    resetAgents();
-
-    // Show progress section
-    document.getElementById('progress-section').classList.add('visible');
-    document.getElementById('report-section').classList.remove('visible');
-
-    try {
-      const r = await fetch(`${API}/api/research`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ location }),
-      });
-      if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-      const data = await r.json();
-      currentReportId = data.report_id;
-      subscribeSSE(data.report_id);
-    } catch (e) {
-      btn.disabled = false;
-      alert('Could not start research: ' + e.message);
-    }
+  function escHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function fillAndRun(loc) {
     document.getElementById('location-input').value = loc;
-    startResearch();
+    analyze();
   }
 
-  /* ── SSE ── */
-  function subscribeSSE(reportId) {
-    if (eventSource) eventSource.close();
-    eventSource = new EventSource(`${API}/api/research/${reportId}/stream`);
-
-    eventSource.onmessage = (evt) => {
-      try {
-        const data = JSON.parse(evt.data);
-        handleEvent(data);
-      } catch {}
-    };
-
-    eventSource.onerror = () => {
-      eventSource.close();
-      document.getElementById('run-btn').disabled = false;
-    };
+  function showError(msg) {
+    const el = document.getElementById('error-banner');
+    el.textContent = msg;
+    el.classList.add('visible');
   }
 
-  function handleEvent(data) {
-    const evt = data.event || data.type || '';
-
-    if (evt === 'agent_start' || evt === 'agent_running') {
-      const key = agentKey(data.agent_name);
-      if (key) setAgentStatus(key, 'running', humanizeRunning(key));
-    }
-
-    if (evt === 'agent_complete' || evt === 'agent_done') {
-      const key = agentKey(data.agent_name);
-      if (key) setAgentStatus(key, 'done', data.summary || humanizeDone(key, data));
-    }
-
-    if (evt === 'agent_error' || evt === 'agent_degraded') {
-      const key = agentKey(data.agent_name);
-      if (key) setAgentStatus(key, 'degraded', 'Some data could not be retrieved');
-    }
-
-    if (evt === 'synthesis_start' || evt === 'synthesizing') {
-      setSynthesis(true);
-      const label = document.getElementById('synthesis-label');
-      if (label) label.textContent = 'Synthesizing risk report…';
-    }
-
-    if (evt === 'report_ready' || evt === 'complete' || evt === 'done') {
-      setSynthesis(false);
-      const label = document.getElementById('synthesis-label');
-      if (label) label.textContent = 'Report ready. Loading…';
-      // Mark any agents that didn't get individual events as done
-      Object.keys(agentState).forEach(k => {
-        if (agentState[k].status !== 'done') setAgentStatus(k, 'done', humanizeDone(k, {}));
-      });
-      loadFullReport(currentReportId);
-      loadHistory();
-      eventSource && eventSource.close();
-      document.getElementById('run-btn').disabled = false;
-    }
-
-    if (evt === 'error') {
-      eventSource && eventSource.close();
-      document.getElementById('run-btn').disabled = false;
-    }
+  function hideError() {
+    document.getElementById('error-banner').classList.remove('visible');
   }
 
-  function humanizeRunning(key) {
-    if (key === 'fema')    return 'Still gathering flood data…';
-    if (key === 'zoning')  return 'Pulling zoning codes and land use records…';
-    if (key === 'climate') return 'Analyzing climate and hazard exposure…';
-    return 'Working…';
-  }
-
-  function humanizeDone(key, data) {
-    if (key === 'fema')    return data.summary || 'Flood zone data retrieved';
-    if (key === 'zoning')  return data.summary || 'Zoning codes reviewed';
-    if (key === 'climate') return data.summary || 'Climate risk assessed';
-    return 'Complete';
-  }
-
-  /* ── Agent UI ── */
-  function resetAgents() {
-    ['fema', 'zoning', 'climate'].forEach(k => setAgentStatus(k, 'waiting', 'Waiting to start…'));
-    setSynthesis(false);
-    document.getElementById('synthesis-label').textContent = 'Synthesis agent will compile the report once all agents complete.';
-  }
-
-  function setAgentStatus(key, status, summary) {
-    agentState[key].status = status;
-    const row    = document.getElementById(`agent-${key}`);
-    const badge  = document.getElementById(`agent-${key}-badge`);
-    const sumEl  = document.getElementById(`agent-${key}-summary`);
-
-    row.className = `agent-row ${status}`;
-
-    if (status === 'waiting') {
-      badge.className = 'agent-badge badge-waiting';
-      badge.innerHTML = '<span>Waiting</span>';
-    } else if (status === 'running') {
-      badge.className = 'agent-badge badge-running';
-      badge.innerHTML = '<span class="pulse-dot"></span><span>Running</span>';
-    } else if (status === 'done') {
-      badge.className = 'agent-badge badge-done';
-      badge.innerHTML = '<i data-lucide="check" style="width:13px;height:13px"></i><span>Done</span>';
-    } else if (status === 'degraded') {
-      badge.className = 'agent-badge badge-degraded';
-      badge.innerHTML = '<i data-lucide="alert-triangle" style="width:13px;height:13px"></i><span>Partial</span>';
-    }
-
-    sumEl.textContent = summary || '';
-    lucide.createIcons();
-  }
-
-  function setSynthesis(active) {
-    const row = document.getElementById('synthesis-row');
-    const spinner = document.getElementById('synthesis-spinner');
-    const icon = document.getElementById('synthesis-icon');
-    const label = document.getElementById('synthesis-label');
-
-    if (active) {
-      row.classList.add('active');
-      spinner.style.display = 'block';
-      icon.style.display = 'none';
-      label.textContent = 'Synthesis agent compiling report…';
+  function setLoading(on, label) {
+    const w = document.getElementById('loading-wrap');
+    if (on) {
+      document.getElementById('loading-label').textContent = label || 'Analyzing neighborhood…';
+      w.classList.add('visible');
     } else {
-      row.classList.remove('active');
-      spinner.style.display = 'none';
-      icon.style.display = '';
+      w.classList.remove('visible');
     }
   }
 
-  /* ── Load full report ── */
-  async function loadFullReport(reportId) {
-    // Try up to 3 times with backoff — the DB write and SSE event can race
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        if (attempt > 0) await new Promise(r => setTimeout(r, attempt * 800));
-        const r = await fetch(`${API}/api/research/${reportId}/report`);
-        if (r.ok) {
-          const data = await r.json();
-          renderReport(data);
-          return;
-        }
-        if (r.status === 404 || r.status === 500) break; // non-retryable
-      } catch {}
-    }
-    // Show a friendly error in the synthesis row
-    const label = document.getElementById('synthesis-label');
-    if (label) label.textContent = 'Report ready — scroll down to see it, or refresh the page.';
-    // Try loading via history as fallback
-    loadHistory();
-  }
-
-  function renderReport(data) {
-    // Score
-    const score = data.risk_score ?? data.overall_risk_score ?? null;
-    const numEl = document.getElementById('score-number');
-    numEl.textContent = score !== null ? Math.round(score) : '—';
-    numEl.className = 'score-number ' + scoreClass(score);
-
-    const proseEl = document.getElementById('score-prose');
-    proseEl.textContent = scoreProse(score, data.location);
-
-    // Executive summary
-    const execEl = document.getElementById('exec-summary');
-    execEl.textContent = data.executive_summary || data.summary || '';
-
-    // Risk breakdown
-    const factors = data.risk_factors || data.factors || defaultFactors(data);
-    renderBreakdown(factors);
-
-    // Section collapsibles
-    renderSections(data);
-
-    // Recommendations
-    const recs = data.recommendations || [];
-    renderRecs(recs);
-
-    // Citations
-    const cites = data.citations || data.sources || [];
-    renderCitations(cites);
-
-    // Show report
-    document.getElementById('report-section').classList.add('visible');
-    document.getElementById('report-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function scoreClass(score) {
-    if (score === null) return '';
-    if (score < 30)  return 'score-low';
-    if (score < 55)  return 'score-amber';
-    if (score < 75)  return 'score-orange';
-    return 'score-red';
-  }
-
-  function scoreLabel(score) {
-    if (score === null) return '';
-    if (score < 30)  return 'low';
-    if (score < 55)  return 'moderate';
-    if (score < 75)  return 'elevated';
-    return 'high';
-  }
-
-  function scoreProse(score, loc) {
-    if (score === null) return '';
-    const s = Math.round(score);
-    const lbl = scoreLabel(score);
-    return `This neighborhood sits at ${s}/100 on our risk scale — that's ${lbl}.`;
-  }
-
-  function defaultFactors(data) {
-    return [
-      { name: 'Flood Risk',   weight: 25, score: data.flood_risk_score   ?? null },
-      { name: 'Wildfire',     weight: 20, score: data.wildfire_score      ?? null },
-      { name: 'Heat',         weight: 15, score: data.heat_score          ?? null },
-      { name: 'Sea Level',    weight: 15, score: data.sea_level_score     ?? null },
-      { name: 'Drought',      weight: 15, score: data.drought_score       ?? null },
-      { name: 'Air Quality',  weight: 10, score: data.air_quality_score   ?? null },
-    ];
-  }
-
-  function renderBreakdown(factors) {
-    const grid = document.getElementById('breakdown-grid');
-    grid.innerHTML = '';
-    factors.forEach(f => {
-      const sc = f.score ?? f.value ?? null;
-      const wt = f.weight ?? f.weight_pct ?? '';
-      const barColor = barColorFor(sc);
-      const pct = sc !== null ? Math.min(100, Math.max(0, sc)) : 0;
-      grid.insertAdjacentHTML('beforeend', `
-        <div class="factor-row">
-          <span class="factor-name">${escHtml(f.name || f.factor || '')}</span>
-          <span class="factor-weight">${wt ? wt + '%' : ''}</span>
-          <div class="factor-bar-wrap">
-            <div class="factor-bar" style="width:${pct}%;background:${barColor}"></div>
-          </div>
-          <span class="factor-score">${sc !== null ? Math.round(sc) : '—'}</span>
-        </div>
-      `);
-    });
-  }
-
-  function barColorFor(score) {
-    if (score === null) return 'var(--stone)';
-    if (score < 30)  return 'var(--green)';
-    if (score < 55)  return '#D97706';
-    if (score < 75)  return 'var(--accent)';
-    return 'var(--red)';
-  }
-
-  function renderSections(data) {
-    const container = document.getElementById('sections-container');
-    container.innerHTML = '';
-
-    const sections = [
-      { title: 'Flood & Water Hazards',   body: data.flood_section   || data.flood_analysis   || data.fema_section   || '' },
-      { title: 'Zoning & Land Use',       body: data.zoning_section  || data.zoning_analysis  || '' },
-      { title: 'Climate & Long-term Risk',body: data.climate_section || data.climate_analysis || '' },
-    ];
-
-    sections.forEach((s, i) => {
-      if (!s.body) return;
-      const el = document.createElement('div');
-      el.className = 'collapsible' + (i === 0 ? ' open' : '');
-      el.innerHTML = `
-        <div class="collapsible-header" onclick="toggleCollapsible(this.closest('.collapsible'))">
-          <span class="collapsible-title">${escHtml(s.title)}</span>
-          <i data-lucide="chevron-down" class="collapsible-chevron" style="width:18px;height:18px"></i>
-        </div>
-        <div class="collapsible-body">
-          ${s.body.split('\n').filter(l => l.trim()).map(l => `<p>${escHtml(l)}</p>`).join('')}
-        </div>
-      `;
-      container.appendChild(el);
-    });
-    lucide.createIcons();
-  }
-
-  function renderRecs(recs) {
-    const list = document.getElementById('recs-list');
-    list.innerHTML = '';
-    if (!recs.length) {
-      list.innerHTML = '<p style="color:var(--stone);font-size:14px">No recommendations available.</p>';
+  async function analyze() {
+    const location = document.getElementById('location-input').value.trim();
+    if (!location || location.length < 3 || !/[a-zA-Z]/.test(location)) {
+      showError('Please enter a valid location name (city, neighborhood, or address).');
       return;
     }
-    recs.forEach((r, i) => {
-      const text = typeof r === 'string' ? r : (r.text || r.recommendation || JSON.stringify(r));
-      list.insertAdjacentHTML('beforeend', `
-        <div class="rec-item">
-          <div class="rec-num">${i + 1}</div>
-          <div class="rec-text">${escHtml(text)}</div>
-        </div>
-      `);
-    });
-  }
+    hideError();
 
-  function renderCitations(cites) {
-    const list = document.getElementById('cite-list');
-    const title = document.getElementById('citations-title');
-    if (!cites.length) {
-      list.innerHTML = '<p style="color:var(--stone);font-size:13px">No citations available.</p>';
-      title.textContent = 'Sources & Citations';
-      return;
-    }
-    title.textContent = `Sources & Citations (${cites.length})`;
-    list.innerHTML = cites.map((c, i) => {
-      const label = typeof c === 'string' ? c : (c.title || c.source || c.url || JSON.stringify(c));
-      const url   = typeof c === 'object' ? (c.url || '') : '';
-      return `
-        <div class="cite-item">
-          <span class="cite-num">[${i + 1}]</span>
-          <span>${url ? `<a href="${escHtml(url)}" target="_blank" rel="noopener">${escHtml(label)}</a>` : escHtml(label)}</span>
-        </div>
-      `;
-    }).join('');
-  }
+    const btn = document.getElementById('run-btn');
+    btn.disabled = true;
 
-  /* ── History ── */
-  async function loadHistory() {
+    document.getElementById('results').classList.remove('visible');
+    setLoading(true, 'Geocoding location…');
+
     try {
-      const r = await fetch(`${API}/api/reports?limit=5`);
-      if (!r.ok) return;
-      const data = await r.json();
-      const list = document.getElementById('past-reports-list');
-
-      const reports = data.reports || data || [];
-      if (!reports.length) {
-        list.innerHTML = '<div class="empty-state">No recent reports yet. Search a location to get started.</div>';
-        return;
+      const url = `${API}/api/analyze?location=${encodeURIComponent(location)}`;
+      const r = await fetch(url);
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        throw new Error(err.detail || `Server error ${r.status}`);
       }
-
-      list.innerHTML = reports.slice(0, 5).map(rep => {
-        const sc = rep.risk_score ?? null;
-        const badgeClass = sc === null ? '' : (sc < 30 ? 'score-low' : sc < 55 ? 'score-amber' : sc < 75 ? 'score-orange' : 'score-red');
-        const badgeBg = sc === null ? 'var(--paper)' :
-                        (sc < 30 ? 'var(--green-bg)' : sc < 55 ? 'var(--amber-bg)' : sc < 75 ? 'var(--orange-bg)' : 'var(--red-bg)');
-        const badgeColor = sc === null ? 'var(--stone)' :
-                           (sc < 30 ? 'var(--green)' : sc < 55 ? 'var(--amber)' : sc < 75 ? 'var(--orange)' : 'var(--red)');
-        const timeStr = rep.created_at ? relativeTime(rep.created_at) : '';
-
-        return `
-          <div class="past-report-row" onclick="loadFromHistory('${escHtml(rep.report_id)}')">
-            <i data-lucide="map-pin" style="width:16px;height:16px;color:var(--stone);flex-shrink:0"></i>
-            <span class="past-report-location">${escHtml(rep.location || rep.report_id)}</span>
-            ${sc !== null ? `<span class="past-report-score" style="background:${badgeBg};color:${badgeColor}">${Math.round(sc)}/100</span>` : ''}
-            <span class="past-report-time">${timeStr}</span>
-          </div>
-        `;
-      }).join('');
-      lucide.createIcons();
-    } catch {}
+      const data = await r.json();
+      setLoading(false);
+      renderResults(data);
+    } catch (e) {
+      setLoading(false);
+      showError(e.message || 'Something went wrong. Please try again.');
+    } finally {
+      btn.disabled = false;
+    }
   }
 
-  async function loadFromHistory(reportId) {
-    currentReportId = reportId;
-    document.getElementById('progress-section').classList.remove('visible');
-    await loadFullReport(reportId);
+  /* ── Score ring ── */
+  function animateRing(score) {
+    const circumference = 408; // 2π × 65
+    const offset = circumference - (score / 100) * circumference;
+    const fill = document.getElementById('score-ring-fill');
+
+    // Color gradient based on score
+    let color;
+    if (score >= 75)      color = '#22c55e';
+    else if (score >= 55) color = '#3b82f6';
+    else if (score >= 35) color = '#eab308';
+    else                  color = '#ef4444';
+
+    fill.style.stroke = color;
+
+    // Animate from 0
+    fill.style.strokeDashoffset = circumference;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        fill.style.strokeDashoffset = offset;
+      });
+    });
+
+    document.getElementById('score-num').textContent = score;
+    document.getElementById('score-num').style.color = color;
+
+    const verdicts = {
+      high:   'Excellent neighborhood',
+      good:   'Good place to live',
+      fair:   'Some concerns to weigh',
+      poor:   'Significant risk factors',
+    };
+    let verdict;
+    if (score >= 75)      verdict = verdicts.high;
+    else if (score >= 55) verdict = verdicts.good;
+    else if (score >= 35) verdict = verdicts.fair;
+    else                  verdict = verdicts.poor;
+    document.getElementById('score-verdict').textContent = verdict;
+    document.getElementById('score-verdict').style.color = color;
   }
 
-  /* ── Collapsible ── */
-  function toggleCollapsible(el) {
-    el.classList.toggle('open');
+  /* ── AQI helpers ── */
+  function aqiClass(aqi) {
+    if (aqi < 50)  return 'aqi-good';
+    if (aqi < 100) return 'aqi-moderate';
+    if (aqi < 150) return 'aqi-usg';
+    return 'aqi-bad';
   }
 
-  /* ── Helpers ── */
-  function escHtml(s) {
-    if (!s) return '';
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function aqiColor(aqi) {
+    if (aqi < 50)  return '#22c55e';
+    if (aqi < 100) return '#eab308';
+    if (aqi < 150) return '#f97316';
+    return '#ef4444';
   }
 
-  function relativeTime(iso) {
-    const diff = Date.now() - new Date(iso).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1)  return 'just now';
-    if (mins < 60) return `${mins}m ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24)  return `${hrs}h ago`;
-    const days = Math.floor(hrs / 24);
-    return `${days}d ago`;
+  /* ── Flood helpers ── */
+  function floodClass(risk) {
+    if (risk === 'High')     return 'flood-high';
+    if (risk === 'Moderate') return 'flood-mod';
+    if (risk === 'Low')      return 'flood-low';
+    return 'flood-min';
+  }
+
+  /* ── Stars ── */
+  function renderStars(rating) {
+    let html = '<div class="stars">';
+    for (let i = 1; i <= 10; i++) {
+      html += `<span class="${i <= rating ? 'star-filled' : 'star-empty'}">★</span>`;
+    }
+    html += '</div>';
+    return html;
+  }
+
+  /* ── Walk score pill ── */
+  function walkPill(score) {
+    let cls, label;
+    if (score >= 90)      { cls = 'walk-walker';  label = "Walker's Paradise"; }
+    else if (score >= 70) { cls = 'walk-able';    label = 'Very Walkable'; }
+    else if (score >= 50) { cls = 'walk-bikeable'; label = 'Somewhat Walkable'; }
+    else if (score >= 25) { cls = 'walk-some';    label = 'Car-Friendly'; }
+    else                  { cls = 'walk-car';     label = 'Car-Dependent'; }
+    return `<span class="walk-pill ${cls}">${label}</span>`;
+  }
+
+  /* ── Crime bars ── */
+  function renderCrimeBars(violent, property, total) {
+    const MAX = 5000;
+    const vPct  = Math.min(100, (violent  / MAX) * 100);
+    const pPct  = Math.min(100, (property / MAX) * 100);
+    const tPct  = Math.min(100, (total    / MAX) * 100);
+    return `
+      <div class="crime-bars" id="crime-bars">
+        <div class="crime-bar-row">
+          <span class="crime-bar-label">Violent</span>
+          <div class="crime-bar-track"><div class="crime-bar-fill" style="width:0%" data-target="${vPct}"></div></div>
+          <span class="crime-bar-num">${violent}</span>
+        </div>
+        <div class="crime-bar-row">
+          <span class="crime-bar-label">Property</span>
+          <div class="crime-bar-track"><div class="crime-bar-fill" style="width:0%" data-target="${pPct}"></div></div>
+          <span class="crime-bar-num">${property}</span>
+        </div>
+        <div class="crime-bar-row">
+          <span class="crime-bar-label">Total</span>
+          <div class="crime-bar-track"><div class="crime-bar-fill" style="width:0%" data-target="${tPct}"></div></div>
+          <span class="crime-bar-num">${total}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function animateBars() {
+    document.querySelectorAll('.crime-bar-fill').forEach(bar => {
+      const target = bar.getAttribute('data-target');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          bar.style.width = target + '%';
+        });
+      });
+    });
+  }
+
+  /* ── Main render ── */
+  function renderResults(d) {
+    // Location bar
+    document.getElementById('loc-name').textContent = d.location_name;
+    document.getElementById('loc-coords').textContent = `${d.lat}, ${d.lon}`;
+    const cb = document.getElementById('cached-badge');
+    cb.style.display = d.cached ? 'inline-flex' : 'none';
+
+    // Score ring
+    animateRing(d.composite_score);
+
+    // Cards data
+    const aColor = aqiColor(d.aqi);
+    const fCls   = floodClass(d.flood_risk);
+
+    const cards = [
+      {
+        icon: '💨',
+        label: 'Air Quality',
+        valueHtml: `<span class="${aqiClass(d.aqi)}" style="font-size:32px;font-weight:800">${d.aqi}</span>`,
+        sub: `AQI &mdash; ${escHtml(d.aqi_category)}`,
+        extra: '',
+      },
+      {
+        icon: '🌊',
+        label: 'Flood Risk',
+        valueHtml: `<span class="${fCls}" style="font-size:28px;font-weight:800">Zone ${escHtml(d.flood_zone)}</span>`,
+        sub: `FEMA flood zone &mdash; ${escHtml(d.flood_risk)} risk`,
+        extra: '',
+      },
+      {
+        icon: '🔒',
+        label: 'Crime Index',
+        valueHtml: `<span style="font-size:24px;font-weight:800;color:#94a3b8">per 100k</span>`,
+        sub: 'Annual crime rates',
+        extra: renderCrimeBars(d.crime_violent, d.crime_property, d.crime_total),
+      },
+      {
+        icon: '🏫',
+        label: 'School Rating',
+        valueHtml: `<span style="font-size:32px;font-weight:800;color:#facc15">${d.school_rating}<span style="font-size:16px;color:var(--text-muted)">/10</span></span>`,
+        sub: 'Public school quality index',
+        extra: renderStars(d.school_rating),
+      },
+      {
+        icon: '🚶',
+        label: 'Walk Score',
+        valueHtml: `<span style="font-size:32px;font-weight:800;color:var(--blue-lt)">${d.walk_score}</span>`,
+        sub: 'Walkability index (0&ndash;100)',
+        extra: walkPill(d.walk_score),
+      },
+      {
+        icon: '🛡️',
+        label: 'Overall Safety',
+        valueHtml: `<span style="font-size:32px;font-weight:800;color:${safetyColor(d.overall_safety)}">${d.overall_safety}</span>`,
+        sub: 'Composite safety score (0&ndash;100)',
+        extra: '',
+      },
+    ];
+
+    const grid = document.getElementById('cards-grid');
+    grid.innerHTML = cards.map((c, i) => `
+      <div class="card" id="card-${i}">
+        <span class="card-icon">${c.icon}</span>
+        <div class="card-label">${c.label}</div>
+        <div class="card-value">${c.valueHtml}</div>
+        <div class="card-sub">${c.sub}</div>
+        ${c.extra}
+      </div>
+    `).join('');
+
+    // Show results section
+    document.getElementById('results').classList.add('visible');
+
+    // Staggered card animations
+    cards.forEach((_, i) => {
+      setTimeout(() => {
+        const el = document.getElementById(`card-${i}`);
+        if (el) el.classList.add('visible');
+      }, 100 + i * 80);
+    });
+
+    // Animate crime bars after cards appear
+    setTimeout(animateBars, 400);
+
+    // Scroll to results smoothly
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function safetyColor(score) {
+    if (score >= 75) return '#22c55e';
+    if (score >= 55) return '#3b82f6';
+    if (score >= 35) return '#eab308';
+    return '#ef4444';
   }
 </script>
 </body>
