@@ -6,7 +6,7 @@
   <title>NeighborhoodPulse — Know Your Neighborhood</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -35,10 +35,29 @@
       background: linear-gradient(135deg, var(--bg-from) 0%, var(--bg-to) 100%);
       background-attachment: fixed;
       color: var(--text);
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Nunito', system-ui, -apple-system, sans-serif;
       font-size: 15px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Scroll animations ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Wave divider ── */
+    .wave-divider {
+      width: 100%;
+      line-height: 0;
+      overflow: hidden;
     }
 
     /* ── Layout ── */
@@ -55,8 +74,8 @@
       width: 100%;
       max-width: 680px;
       text-align: center;
-      padding-top: 80px;
-      padding-bottom: 48px;
+      padding-top: 96px;
+      padding-bottom: 64px;
     }
 
     .brand {
@@ -78,7 +97,7 @@
 
     .brand-name {
       font-size: 20px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: -0.02em;
       background: linear-gradient(90deg, var(--purple-lt), var(--blue-lt));
       -webkit-background-clip: text;
@@ -88,7 +107,7 @@
 
     .hero-headline {
       font-size: clamp(32px, 5vw, 52px);
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: -0.03em;
       line-height: 1.1;
       margin-bottom: 16px;
@@ -100,6 +119,7 @@
 
     .hero-sub {
       font-size: 17px;
+      font-weight: 400;
       color: var(--text-muted);
       max-width: 480px;
       margin: 0 auto 40px;
@@ -112,7 +132,7 @@
       border: 1px solid var(--glass-bd);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-radius: 20px;
+      border-radius: 1.5rem;
       padding: 20px;
       margin-bottom: 16px;
     }
@@ -127,37 +147,41 @@
       padding: 14px 20px;
       background: rgba(255,255,255,0.07);
       border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px;
+      border-radius: 50rem;
       font-family: inherit;
       font-size: 16px;
+      font-weight: 500;
       color: var(--text);
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
     }
 
     .search-input::placeholder { color: var(--text-dim); }
 
     .search-input:focus {
       border-color: var(--purple);
-      box-shadow: 0 0 0 3px rgba(124,58,237,0.20);
+      box-shadow: 0 0 0 4px rgba(124,58,237,0.22);
     }
 
     .btn-analyze {
-      padding: 14px 24px;
+      padding: 14px 28px;
       background: linear-gradient(135deg, var(--purple), #6d28d9);
       color: #fff;
       border: none;
-      border-radius: 12px;
+      border-radius: 50rem;
       font-family: inherit;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
-      transition: opacity 0.15s, transform 0.1s, box-shadow 0.2s;
+      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
       box-shadow: 0 4px 20px rgba(124,58,237,0.40);
     }
 
-    .btn-analyze:hover { opacity: 0.90; box-shadow: 0 6px 28px rgba(124,58,237,0.55); }
+    .btn-analyze:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(124,58,237,0.55);
+    }
     .btn-analyze:active { transform: scale(0.97); }
     .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
@@ -170,21 +194,22 @@
     }
 
     .pill {
-      padding: 6px 14px;
+      padding: 6px 16px;
       border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 999px;
+      border-radius: 50rem;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-muted);
       background: transparent;
       cursor: pointer;
-      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
     }
 
     .pill:hover {
       border-color: var(--purple);
       color: var(--purple-lt);
       background: rgba(124,58,237,0.10);
+      transform: translateY(-1px);
     }
 
     /* ── Error banner ── */
@@ -194,11 +219,11 @@
       display: none;
       background: rgba(239,68,68,0.12);
       border: 1px solid rgba(239,68,68,0.30);
-      border-radius: 12px;
+      border-radius: 1.5rem;
       padding: 14px 20px;
       color: var(--error);
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 24px;
       text-align: center;
     }
@@ -210,14 +235,14 @@
       flex-direction: column;
       align-items: center;
       gap: 16px;
-      padding: 48px 0;
+      padding: 64px 0;
     }
     .loading-wrap.visible { display: flex; }
 
     .loading-label {
       color: var(--text-muted);
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     /* 3-dot pulse */
@@ -261,9 +286,9 @@
       gap: 12px;
       background: var(--glass);
       border: 1px solid var(--glass-bd);
-      border-radius: 14px;
-      padding: 14px 20px;
-      margin-bottom: 32px;
+      border-radius: 1.5rem;
+      padding: 16px 22px;
+      margin-bottom: 4rem;
       backdrop-filter: blur(12px);
     }
 
@@ -279,8 +304,8 @@
     }
 
     .loc-info { flex: 1; min-width: 0; }
-    .loc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px; }
-    .loc-name { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .loc-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px; }
+    .loc-name { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .loc-coords { font-size: 12px; color: var(--text-muted); }
 
     /* ── Score ring ── */
@@ -288,7 +313,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 40px;
+      margin-bottom: 4rem;
+      padding-top: 1rem;
     }
 
     .score-ring-wrap {
@@ -328,7 +354,7 @@
 
     .score-num {
       font-size: 42px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: -0.03em;
       line-height: 1;
     }
@@ -336,19 +362,19 @@
     .score-out {
       font-size: 12px;
       color: var(--text-dim);
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .score-title {
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-muted);
       margin-bottom: 4px;
     }
 
     .score-verdict {
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text);
     }
 
@@ -356,8 +382,8 @@
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 40px;
+      gap: 20px;
+      margin-bottom: 4rem;
     }
 
     @media (max-width: 700px) {
@@ -370,10 +396,10 @@
     .card {
       background: var(--glass);
       border: 1px solid var(--glass-bd);
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 1.5rem;
+      padding: 24px;
       backdrop-filter: blur(12px);
-      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      transition: background 0.2s, border-color 0.2s, transform 0.3s cubic-bezier(0.16,1,0.3,1);
       opacity: 0;
       transform: translateY(16px);
     }
@@ -387,7 +413,7 @@
     .card:hover {
       background: var(--glass-hover);
       border-color: rgba(255,255,255,0.16);
-      transform: translateY(-2px);
+      transform: translateY(-4px);
     }
 
     .card-icon {
@@ -398,7 +424,7 @@
 
     .card-label {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-dim);
@@ -446,10 +472,10 @@
     /* ── Walk score pill ── */
     .walk-pill {
       display: inline-block;
-      padding: 3px 10px;
-      border-radius: 999px;
+      padding: 3px 12px;
+      border-radius: 50rem;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       margin-top: 6px;
     }
 
@@ -465,13 +491,40 @@
       align-items: center;
       gap: 5px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-dim);
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 999px;
+      border-radius: 50rem;
       padding: 3px 10px;
       margin-left: 8px;
+    }
+
+    /* ── Score breakdown & events panels ── */
+    .panel {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto 2rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 1.5rem;
+      padding: 24px 28px;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .panel-footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: 12px;
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -481,7 +534,7 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="brand">
+    <div class="brand reveal">
       <div class="brand-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -491,10 +544,10 @@
       <span class="brand-name">NeighborhoodPulse</span>
     </div>
 
-    <h1 class="hero-headline">Know before you move.</h1>
-    <p class="hero-sub">Enter any city, neighborhood, or address. Get real air quality data, flood risk, crime stats, school ratings, and a composite livability score — instantly.</p>
+    <h1 class="hero-headline reveal">Know before you move.</h1>
+    <p class="hero-sub reveal">Enter any city, neighborhood, or address. Get real air quality data, flood risk, crime stats, school ratings, and a composite livability score — instantly.</p>
 
-    <div class="search-wrap">
+    <div class="search-wrap reveal">
       <div class="search-row">
         <input
           class="search-input"
@@ -519,6 +572,13 @@
 
   </section>
 
+  <!-- Wave divider: hero → results -->
+  <div class="wave-divider" aria-hidden="true">
+    <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:60px;">
+      <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="rgba(255,255,255,0.02)"/>
+    </svg>
+  </div>
+
   <!-- Error banner -->
   <div class="error-banner" id="error-banner"></div>
 
@@ -536,7 +596,7 @@
   <div class="results" id="results">
 
     <!-- Location bar -->
-    <div class="location-bar">
+    <div class="location-bar reveal">
       <div class="loc-pin">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -556,7 +616,7 @@
 
     <!-- Score ring -->
     <div class="score-section">
-      <div class="score-ring-wrap">
+      <div class="score-ring-wrap reveal">
         <svg width="160" height="160" viewBox="0 0 160 160">
           <circle class="score-ring-track" cx="80" cy="80" r="65"/>
           <circle class="score-ring-fill" id="score-ring-fill" cx="80" cy="80" r="65"/>
@@ -566,24 +626,38 @@
           <div class="score-out">/ 100</div>
         </div>
       </div>
-      <div class="score-title">Composite Livability Score</div>
-      <div class="score-verdict" id="score-verdict"></div>
+      <div class="score-title reveal">Composite Livability Score</div>
+      <div class="score-verdict reveal" id="score-verdict"></div>
+    </div>
+
+    <!-- Wave divider: score → breakdown -->
+    <div class="wave-divider" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:60px;">
+        <path d="M0,15 C480,50 960,0 1440,25 L1440,60 L0,60 Z" fill="rgba(255,255,255,0.015)"/>
+      </svg>
     </div>
 
     <!-- Score Breakdown -->
-    <div id="score-breakdown" style="display:none; width:100%; max-width:640px; margin: 0 auto 8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:14px; padding:20px 24px;">
-      <div style="font-size:13px; font-weight:600; letter-spacing:.08em; color:var(--text-muted); text-transform:uppercase; margin-bottom:14px;">How this score was calculated</div>
+    <div id="score-breakdown" class="panel reveal" style="display:none;">
+      <div class="panel-title">How this score was calculated</div>
       <div id="breakdown-rows"></div>
-      <div style="border-top:1px solid rgba(255,255,255,0.08); margin-top:12px; padding-top:12px; display:flex; justify-content:space-between; font-size:13px;">
+      <div class="panel-footer">
         <span style="color:var(--text-muted);">Total</span>
-        <span style="font-weight:700; color:var(--text);" id="breakdown-total">— / 100</span>
+        <span style="font-weight:800; color:var(--text);" id="breakdown-total">— / 100</span>
       </div>
     </div>
 
     <!-- Recent Events -->
-    <div id="recent-events-section" style="display:none; width:100%; max-width:640px; margin: 0 auto 8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:14px; padding:20px 24px;">
-      <div style="font-size:13px; font-weight:600; letter-spacing:.08em; color:var(--text-muted); text-transform:uppercase; margin-bottom:14px;">📰 Recent Local Reports</div>
+    <div id="recent-events-section" class="panel reveal" style="display:none;">
+      <div class="panel-title">📰 Recent Local Reports</div>
       <div id="recent-events-rows"></div>
+    </div>
+
+    <!-- Wave divider: panels → cards -->
+    <div class="wave-divider" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:60px;">
+        <path d="M0,30 C360,0 1080,55 1440,20 L1440,60 L0,60 Z" fill="rgba(255,255,255,0.015)"/>
+      </svg>
     </div>
 
     <!-- Cards -->
@@ -597,6 +671,12 @@
 
 <script>
   const API = '';
+
+  /* ── Intersection Observer for reveal animations ── */
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
   function escHtml(s) {
     if (s == null) return '';
@@ -808,17 +888,19 @@
         const pct = Math.round((v.points / v.max) * 100);
         const barColor = pct >= 70 ? '#22c55e' : pct >= 40 ? '#eab308' : '#ef4444';
         return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <div style="width:130px;font-size:13px;color:var(--text-muted);flex-shrink:0;">${labels[k]||k}</div>
-          <div style="flex:1;background:rgba(255,255,255,0.07);border-radius:4px;height:6px;overflow:hidden;">
-            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:4px;transition:width .6s ease;"></div>
+          <div style="width:130px;font-size:13px;color:var(--text-muted);flex-shrink:0;font-weight:600;">${labels[k]||k}</div>
+          <div style="flex:1;background:rgba(255,255,255,0.07);border-radius:50rem;height:6px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:50rem;transition:width .6s ease;"></div>
           </div>
-          <div style="width:70px;font-size:12px;color:var(--text-muted);text-align:right;">${v.points} / ${v.max} pts</div>
+          <div style="width:70px;font-size:12px;color:var(--text-muted);text-align:right;font-weight:600;">${v.points} / ${v.max} pts</div>
           <div style="width:130px;font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(v.label)}">${escHtml(v.label)}</div>
         </div>`;
       }).join('');
       document.getElementById('breakdown-rows').innerHTML = rows;
       document.getElementById('breakdown-total').textContent = `${d.composite_score} / 100`;
-      document.getElementById('score-breakdown').style.display = 'block';
+      const bdEl = document.getElementById('score-breakdown');
+      bdEl.style.display = 'block';
+      revealObserver.observe(bdEl);
     }
 
     // Recent events
@@ -826,12 +908,13 @@
     const evRows = document.getElementById('recent-events-rows');
     if (d.recent_events && d.recent_events.length > 0) {
       evRows.innerHTML = d.recent_events.map(ev => `
-        <a href="${escHtml(ev.url)}" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none; margin-bottom:12px; padding:10px 12px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
-          <div style="font-size:13px; color:var(--text); line-height:1.4; margin-bottom:4px;">${escHtml(ev.title)}</div>
-          <div style="font-size:11px; color:var(--text-dim);">${escHtml(ev.source)}${ev.published ? ' &middot; ' + escHtml(ev.published) : ''}</div>
+        <a href="${escHtml(ev.url)}" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none; margin-bottom:12px; padding:12px 16px; border-radius:1rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+          <div style="font-size:13px; color:var(--text); line-height:1.4; margin-bottom:4px; font-weight:600;">${escHtml(ev.title)}</div>
+          <div style="font-size:11px; color:var(--text-dim); font-weight:500;">${escHtml(ev.source)}${ev.published ? ' &middot; ' + escHtml(ev.published) : ''}</div>
         </a>
       `).join('');
       evSection.style.display = 'block';
+      revealObserver.observe(evSection);
     } else {
       evSection.style.display = 'none';
     }
@@ -898,6 +981,9 @@
 
     // Show results section
     document.getElementById('results').classList.add('visible');
+
+    // Re-observe newly revealed elements inside results
+    document.querySelectorAll('#results .reveal').forEach(el => revealObserver.observe(el));
 
     // Staggered card animations
     cards.forEach((_, i) => {
