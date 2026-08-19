@@ -20,8 +20,8 @@
       --glass:      rgba(255,255,255,0.05);
       --glass-bd:   rgba(255,255,255,0.10);
       --glass-hover:rgba(255,255,255,0.08);
-      --text:       #f1f5f9;
-      --text-muted: #94a3b8;
+      --text:       #f0ece8;
+      --text-muted: #a09890;
       --text-dim:   #64748b;
       --aqi-green:  #22c55e;
       --aqi-yellow: #eab308;
@@ -32,8 +32,11 @@
 
     html, body {
       min-height: 100%;
-      background: linear-gradient(135deg, var(--bg-from) 0%, var(--bg-to) 100%);
-      background-attachment: fixed;
+      background-color: #242020;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 30px 30px;
       color: var(--text);
       font-family: 'Nunito', system-ui, -apple-system, sans-serif;
       font-size: 15px;
@@ -165,22 +168,22 @@
 
     .btn-analyze {
       padding: 14px 28px;
-      background: linear-gradient(135deg, var(--purple), #6d28d9);
-      color: #fff;
+      background: linear-gradient(135deg, #f09060, #fbb485);
+      color: #1a0e08;
       border: none;
       border-radius: 50rem;
       font-family: inherit;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 900;
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-      box-shadow: 0 4px 20px rgba(124,58,237,0.40);
+      box-shadow: 0 4px 20px rgba(240,144,96,0.35);
     }
 
     .btn-analyze:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(124,58,237,0.55);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 32px rgba(240,144,96,0.45);
     }
     .btn-analyze:active { transform: scale(0.97); }
     .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
@@ -394,26 +397,37 @@
     }
 
     .card {
-      background: var(--glass);
+      background: #1e1b1b;
       border: 1px solid var(--glass-bd);
       border-radius: 1.5rem;
       padding: 24px;
-      backdrop-filter: blur(12px);
-      transition: background 0.2s, border-color 0.2s, transform 0.3s cubic-bezier(0.16,1,0.3,1);
+      transition: background 0.2s, border-color 0.2s, transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
       opacity: 0;
       transform: translateY(16px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #7b5ea7, #c85878, #e8836a, #d4a64a, #c8b84a);
+      border-radius: 1.5rem 1.5rem 0 0;
     }
 
     .card.visible {
       opacity: 1;
       transform: translateY(0);
-      transition: opacity 0.5s ease, transform 0.5s ease, background 0.2s, border-color 0.2s;
+      transition: opacity 0.5s ease, transform 0.5s ease, background 0.2s, border-color 0.2s, box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
     }
 
     .card:hover {
-      background: var(--glass-hover);
+      background: #242020;
       border-color: rgba(255,255,255,0.16);
-      transform: translateY(-4px);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
     }
 
     .card-icon {
@@ -531,6 +545,24 @@
 <body>
 
 <main class="page">
+
+  <!-- Rainbow stripe decoration -->
+  <div style="position:relative;height:110px;overflow:hidden;pointer-events:none;width:100%;margin-bottom:0;" aria-hidden="true">
+    <svg viewBox="0 0 1440 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="position:absolute;bottom:0;left:0;width:100%;height:auto;">
+      <path d="M-100,70 C200,10 500,100 800,50 C1100,0 1300,80 1540,40" fill="none" stroke="#7b5ea7" stroke-width="18" stroke-linecap="round" opacity="0.55"/>
+      <path d="M-100,82 C200,22 500,112 800,62 C1100,12 1300,92 1540,52" fill="none" stroke="#c85878" stroke-width="15" stroke-linecap="round" opacity="0.5"/>
+      <path d="M-100,94 C200,34 500,124 800,74 C1100,24 1300,104 1540,64" fill="none" stroke="#e8836a" stroke-width="13" stroke-linecap="round" opacity="0.45"/>
+      <path d="M-100,106 C200,46 500,136 800,86 C1100,36 1300,116 1540,76" fill="none" stroke="#d4a64a" stroke-width="11" stroke-linecap="round" opacity="0.4"/>
+      <path d="M-100,118 C200,58 500,148 800,98 C1100,48 1300,128 1540,88" fill="none" stroke="#c8b84a" stroke-width="9" stroke-linecap="round" opacity="0.35"/>
+    </svg>
+  </div>
+
+  <!-- Bold hero -->
+  <div style="max-width:900px;margin:0 auto;padding:40px 24px 8px;text-align:center;">
+    <div style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#f09060;margin-bottom:10px;">Neighborhood Intelligence</div>
+    <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;color:#f0ece8;line-height:1.15;letter-spacing:-0.03em;margin-bottom:12px;">Know your neighborhood<br>before you move in.</h1>
+    <p style="font-size:15px;color:#a09890;max-width:500px;margin:0 auto;font-weight:500;">Real-time risk scores, FEMA flood data, climate risk, and recent local news — all synthesized into one 0–100 neighborhood score.</p>
+  </div>
 
   <!-- Hero -->
   <section class="hero">
