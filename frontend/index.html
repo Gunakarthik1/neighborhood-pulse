@@ -3,41 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeighborhoodPulse — Know Your Neighborhood</title>
+  <title>NeighborhoodPulse — Location Intelligence Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg-from:    #0f0f1a;
-      --bg-to:      #1a1a2e;
-      --purple:     #7c3aed;
-      --purple-lt:  #9d5cf0;
-      --blue:       #3b82f6;
-      --blue-lt:    #60a5fa;
-      --glass:      rgba(255,255,255,0.05);
-      --glass-bd:   rgba(255,255,255,0.10);
-      --glass-hover:rgba(255,255,255,0.08);
-      --text:       #f0ece8;
-      --text-muted: #a09890;
-      --text-dim:   #64748b;
-      --aqi-green:  #22c55e;
-      --aqi-yellow: #eab308;
-      --aqi-orange: #f97316;
-      --aqi-red:    #ef4444;
-      --error:      #f87171;
+      --bg: #192018;
+      --card: #1e2a1e;
+      --border: rgba(22,163,74,0.2);
+      --accent: #16a34a;
+      --accent-end: #4ade80;
+      --ink: #e8f5e9;
+      --muted: #6aaf72;
+      --error: #f87171;
     }
 
     html, body {
       min-height: 100%;
-      background-color: #192018;
+      background-color: var(--bg);
       background-image:
-        linear-gradient(rgba(100,220,100,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(100,220,100,0.018) 1px, transparent 1px);
+        linear-gradient(rgba(22,163,74,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(22,163,74,0.025) 1px, transparent 1px);
       background-size: 30px 30px;
-      color: var(--text);
+      color: var(--ink);
       font-family: 'Nunito', system-ui, -apple-system, sans-serif;
       font-size: 15px;
       line-height: 1.6;
@@ -45,189 +36,238 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ── Scroll animations ── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(32px);
-      transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
-    }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ── Wave divider ── */
-    .wave-divider {
-      width: 100%;
-      line-height: 0;
-      overflow: hidden;
-    }
-
-    /* ── Layout ── */
-    .page {
-      min-height: 100vh;
+    /* ── Topbar ── */
+    .topbar {
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(25,32,24,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+    }
+
+    .topbar-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #16a34a, #4ade80);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .topbar-logo-name {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .topbar-tagline {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4ade80;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 0 0 rgba(74,222,128,0.6);
+      animation: livePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes livePulse {
+      0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.6); }
+      70%  { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+      100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+    }
+
+    .topbar-gh {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .topbar-gh:hover {
+      border-color: var(--accent);
+      color: #4ade80;
+      background: rgba(22,163,74,0.07);
+    }
+
+    /* ── Page shell ── */
+    .page {
       padding: 0 16px 80px;
     }
 
-    /* ── Hero ── */
-    .hero {
-      width: 100%;
-      max-width: 680px;
-      text-align: center;
-      padding-top: 96px;
-      padding-bottom: 64px;
+    /* ── Address bar ── */
+    .address-bar {
+      max-width: 900px;
+      margin: 40px auto 32px;
+      display: flex;
+      gap: 0;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 0 0 rgba(22,163,74,0);
+      transition: box-shadow 0.3s;
     }
 
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 32px;
+    .address-bar:focus-within {
+      box-shadow: 0 0 0 3px rgba(22,163,74,0.2);
     }
 
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--purple), var(--blue));
-      border-radius: 10px;
+    .address-icon {
+      padding: 0 16px;
       display: flex;
       align-items: center;
-      justify-content: center;
-    }
-
-    .brand-name {
+      color: var(--muted);
       font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      background: linear-gradient(90deg, var(--purple-lt), var(--blue-lt));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      flex-shrink: 0;
     }
 
-    .hero-headline {
-      font-size: clamp(32px, 5vw, 52px);
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-sub {
-      font-size: 17px;
-      font-weight: 400;
-      color: var(--text-muted);
-      max-width: 480px;
-      margin: 0 auto 40px;
-      line-height: 1.65;
-    }
-
-    /* ── Search ── */
-    .search-wrap {
-      background: var(--glass);
-      border: 1px solid var(--glass-bd);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 1.5rem;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-
-    .search-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .search-input {
+    .address-bar input {
       flex: 1;
-      padding: 14px 20px;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 50rem;
-      font-family: inherit;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
-    }
-
-    .search-input::placeholder { color: var(--text-dim); }
-
-    .search-input:focus {
-      border-color: var(--purple);
-      box-shadow: 0 0 0 4px rgba(124,58,237,0.22);
-    }
-
-    .btn-analyze {
-      padding: 14px 28px;
-      background: linear-gradient(135deg, #16a34a, #4ade80);
-      color: #051a0b;
+      background: transparent;
       border: none;
-      border-radius: 50rem;
-      font-family: inherit;
-      font-size: 15px;
-      font-weight: 900;
+      padding: 20px 0;
+      font: 700 18px 'Nunito', sans-serif;
+      color: var(--ink);
+      outline: none;
+      min-width: 0;
+    }
+
+    .address-bar input::placeholder {
+      color: rgba(106,175,114,0.5);
+      font-weight: 600;
+    }
+
+    .address-bar button {
+      margin: 8px;
+      padding: 0 28px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #16a34a, #4ade80);
+      color: #021a08;
+      font: 700 15px 'Nunito', sans-serif;
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-      box-shadow: 0 4px 20px rgba(22,163,74,0.4);
+      transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+      flex-shrink: 0;
     }
 
-    .btn-analyze:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 32px rgba(22,163,74,0.5);
+    .address-bar button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(22,163,74,0.4);
     }
-    .btn-analyze:active { transform: scale(0.97); }
-    .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
+    .address-bar button:active {
+      transform: scale(0.97);
+    }
+
+    .address-bar button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Example pills ── */
     .example-pills {
+      max-width: 900px;
+      margin: -16px auto 32px;
       display: flex;
       gap: 8px;
-      justify-content: center;
       flex-wrap: wrap;
-      margin-top: 12px;
+      padding: 0 4px;
+    }
+
+    .example-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      margin-right: 4px;
     }
 
     .pill {
-      padding: 6px 16px;
-      border: 1px solid rgba(255,255,255,0.12);
+      padding: 5px 14px;
+      border: 1px solid var(--border);
       border-radius: 50rem;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
       background: transparent;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+      font-family: 'Nunito', sans-serif;
+      transition: all 0.2s;
     }
 
     .pill:hover {
       border-color: #4ade80;
       color: #4ade80;
-      background: rgba(74,222,128,0.10);
-      transform: translateY(-1px);
+      background: rgba(74,222,128,0.08);
     }
 
     /* ── Error banner ── */
     .error-banner {
-      width: 100%;
-      max-width: 680px;
+      max-width: 900px;
+      margin: 0 auto 24px;
       display: none;
-      background: rgba(239,68,68,0.12);
-      border: 1px solid rgba(239,68,68,0.30);
-      border-radius: 1.5rem;
-      padding: 14px 20px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.28);
+      border-radius: 12px;
+      padding: 12px 20px;
       color: var(--error);
       font-size: 14px;
       font-weight: 600;
-      margin-bottom: 24px;
       text-align: center;
     }
     .error-banner.visible { display: block; }
@@ -237,27 +277,27 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
-      padding: 64px 0;
+      gap: 14px;
+      padding: 56px 0;
     }
     .loading-wrap.visible { display: flex; }
 
     .loading-label {
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 600;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
     }
 
-    /* 3-dot pulse */
     .dots {
       display: flex;
       gap: 8px;
     }
     .dot {
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--purple), var(--blue));
+      background: linear-gradient(135deg, #16a34a, #4ade80);
       animation: dotPulse 1.4s ease-in-out infinite;
     }
     .dot:nth-child(2) { animation-delay: 0.2s; }
@@ -268,81 +308,68 @@
       40%            { transform: scale(1);   opacity: 1; }
     }
 
-    /* ── Results area ── */
-    .results {
+    /* ── Analysis grid (score + breakdown) ── */
+    .analysis-grid {
+      max-width: 900px;
+      margin: 0 auto 28px;
       display: none;
-      width: 100%;
-      max-width: 860px;
-      animation: fadeSlideUp 0.5s ease both;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
     }
-    .results.visible { display: block; }
+    .analysis-grid.visible { display: grid; }
 
     @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(24px); }
+      from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Location bar ── */
-    .location-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--glass);
-      border: 1px solid var(--glass-bd);
-      border-radius: 1.5rem;
-      padding: 16px 22px;
-      margin-bottom: 4rem;
-      backdrop-filter: blur(12px);
-    }
-
-    .loc-pin {
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, var(--purple), var(--blue));
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .loc-info { flex: 1; min-width: 0; }
-    .loc-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px; }
-    .loc-name { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .loc-coords { font-size: 12px; color: var(--text-muted); }
-
-    /* ── Score ring ── */
-    .score-section {
+    /* ── Score card ── */
+    .score-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 4rem;
-      padding-top: 1rem;
+      justify-content: center;
+      padding: 40px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .score-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #16a34a, #4ade80, #16a34a);
     }
 
     .score-ring-wrap {
       position: relative;
-      width: 160px;
-      height: 160px;
-      margin-bottom: 16px;
+      width: 220px;
+      height: 220px;
     }
 
     .score-ring-wrap svg {
+      width: 100%;
+      height: 100%;
       transform: rotate(-90deg);
     }
 
     .score-ring-track {
       fill: none;
-      stroke: rgba(255,255,255,0.08);
-      stroke-width: 10;
+      stroke: rgba(22,163,74,0.1);
+      stroke-width: 12;
     }
 
     .score-ring-fill {
       fill: none;
-      stroke-width: 10;
+      stroke-width: 12;
       stroke-linecap: round;
-      stroke-dasharray: 408; /* 2π*65 */
-      stroke-dashoffset: 408;
+      stroke-dasharray: 659.73; /* 2π × 105 */
+      stroke-dashoffset: 659.73;
       transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1), stroke 0.5s;
     }
 
@@ -355,266 +382,567 @@
       justify-content: center;
     }
 
-    .score-num {
-      font-size: 42px;
+    .score-number {
+      font-size: 56px;
       font-weight: 900;
-      letter-spacing: -0.03em;
+      color: var(--ink);
       line-height: 1;
+      letter-spacing: -0.03em;
     }
 
-    .score-out {
+    .score-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .risk-badge {
+      margin-top: 20px;
+      padding: 6px 20px;
+      border-radius: 100px;
+      font: 700 13px 'Nunito', sans-serif;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .score-location {
+      margin-top: 12px;
       font-size: 12px;
-      color: var(--text-dim);
+      font-weight: 700;
+      color: var(--muted);
+      text-align: center;
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .score-coords {
+      font-size: 11px;
+      color: rgba(106,175,114,0.6);
       font-weight: 600;
     }
 
-    .score-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 4px;
+    .cached-chip {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(106,175,114,0.7);
+      background: rgba(22,163,74,0.08);
+      border: 1px solid var(--border);
+      border-radius: 50rem;
+      padding: 3px 10px;
+      margin-top: 8px;
     }
+    .cached-chip.visible { display: inline-flex; }
 
-    .score-verdict {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    /* ── Cards grid ── */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-bottom: 4rem;
-    }
-
-    @media (max-width: 700px) {
-      .cards-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 460px) {
-      .cards-grid { grid-template-columns: 1fr; }
-    }
-
-    .card {
-      background: #1c2018;
-      border: 1px solid var(--glass-bd);
-      border-radius: 1.5rem;
-      padding: 24px;
-      transition: background 0.2s, border-color 0.2s, transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
-      opacity: 0;
-      transform: translateY(16px);
+    /* ── Breakdown card ── */
+    .breakdown-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
       position: relative;
       overflow: hidden;
     }
 
-    .card::before {
+    .breakdown-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
-      background: linear-gradient(90deg, #166534, #16a34a, #4ade80, #86efac, #d9f99d);
-      border-radius: 1.5rem 1.5rem 0 0;
+      background: linear-gradient(90deg, #16a34a, #4ade80, #16a34a);
     }
 
-    .card.visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.5s ease, transform 0.5s ease, background 0.2s, border-color 0.2s, box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
-    }
-
-    .card:hover {
-      background: #242020;
-      border-color: rgba(255,255,255,0.16);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-    }
-
-    .card-icon {
-      font-size: 28px;
-      margin-bottom: 12px;
-      display: block;
-    }
-
-    .card-label {
+    .breakdown-title {
       font-size: 11px;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 6px;
+      color: var(--muted);
+      margin-bottom: 20px;
     }
 
-    .card-value {
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 4px;
+    .risk-row {
+      margin-bottom: 18px;
     }
 
-    .card-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-      line-height: 1.4;
+    .risk-row:last-of-type {
+      margin-bottom: 0;
     }
 
-    /* AQI color classes */
-    .aqi-good     { color: var(--aqi-green); }
-    .aqi-moderate { color: var(--aqi-yellow); }
-    .aqi-usg      { color: var(--aqi-orange); }
-    .aqi-bad      { color: var(--aqi-red); }
+    .risk-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
 
-    .flood-high   { color: var(--aqi-red); }
-    .flood-mod    { color: var(--aqi-orange); }
-    .flood-low    { color: var(--aqi-yellow); }
-    .flood-min    { color: var(--aqi-green); }
-
-    /* ── Crime bar chart ── */
-    .crime-bars { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-    .crime-bar-row { display: flex; align-items: center; gap: 8px; }
-    .crime-bar-label { font-size: 11px; color: var(--text-muted); width: 56px; flex-shrink: 0; }
-    .crime-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
-    .crime-bar-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--blue)); transition: width 1s cubic-bezier(0.4,0,0.2,1); }
-    .crime-bar-num { font-size: 11px; color: var(--text-muted); width: 36px; text-align: right; flex-shrink: 0; }
-
-    /* ── Stars ── */
-    .stars { display: flex; gap: 3px; margin-top: 6px; }
-    .star-filled { color: #facc15; }
-    .star-empty  { color: rgba(255,255,255,0.15); }
-
-    /* ── Walk score pill ── */
-    .walk-pill {
-      display: inline-block;
-      padding: 3px 12px;
-      border-radius: 50rem;
-      font-size: 12px;
+    .risk-row-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-weight: 700;
-      margin-top: 6px;
+      font-size: 14px;
+      color: var(--ink);
     }
 
-    .walk-car   { background: rgba(239,68,68,0.15);  color: #f87171; }
-    .walk-some  { background: rgba(234,179,8,0.15);  color: #facc15; }
-    .walk-bikeable { background: rgba(59,130,246,0.15); color: #60a5fa; }
-    .walk-able  { background: rgba(34,197,94,0.15);  color: #4ade80; }
-    .walk-walker{ background: rgba(124,58,237,0.20); color: #c4b5fd; }
+    .risk-row-label .risk-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
 
-    /* ── Cached badge ── */
-    .cached-badge {
+    .risk-row-score {
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--ink);
+    }
+
+    .progress-track {
+      height: 8px;
+      background: rgba(22,163,74,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #16a34a, #4ade80);
+      width: 0%;
+      transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .risk-row-meta {
+      margin-top: 6px;
+      font-size: 11px;
+      color: rgba(106,175,114,0.65);
+      font-weight: 600;
+    }
+
+    /* Citation chips below breakdown */
+    .citation-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(22,163,74,0.1);
+    }
+
+    .citation-chip {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
-      color: var(--text-dim);
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 50rem;
-      padding: 3px 10px;
-      margin-left: 8px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(22,163,74,0.07);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
     }
 
-    /* ── Score breakdown & events panels ── */
-    .panel {
-      width: 100%;
-      max-width: 640px;
-      margin: 0 auto 2rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 1.5rem;
-      padding: 24px 28px;
+    /* ── Intel grid ── */
+    .intel-grid {
+      max-width: 900px;
+      margin: 0 auto 28px;
+      display: none;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s both;
     }
-    .panel-title {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      color: var(--text-muted);
+    .intel-grid.visible { display: grid; }
+
+    .intel-col {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intel-col::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #16a34a, #4ade80, #16a34a);
+    }
+
+    .intel-col-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
+      color: var(--muted);
       margin-bottom: 16px;
     }
-    .panel-footer {
-      border-top: 1px solid rgba(255,255,255,0.08);
-      margin-top: 12px;
-      padding-top: 12px;
+
+    .intel-col-header .col-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .intel-item {
       display: flex;
       justify-content: space-between;
-      font-size: 13px;
+      align-items: flex-start;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(22,163,74,0.08);
+      font-size: 12px;
+      gap: 8px;
+    }
+
+    .intel-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .intel-key {
+      color: var(--muted);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .intel-val {
+      font-weight: 700;
+      color: var(--ink);
+      text-align: right;
+    }
+
+    /* ── AI Synthesis panel ── */
+    .synthesis-panel {
+      max-width: 900px;
+      margin: 0 auto 48px;
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      grid-template-columns: 1fr 240px;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+    }
+    .synthesis-panel.visible { display: grid; }
+
+    .synthesis-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #16a34a, #4ade80, #16a34a);
+    }
+
+    .synthesis-left {}
+
+    .synthesis-label {
+      font: 700 11px 'Nunito';
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .synthesis-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(22,163,74,0.15);
+    }
+
+    .synthesis-text {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--ink);
+      min-height: 60px;
+    }
+
+    /* Recent events inside synthesis panel */
+    .recent-events-wrap {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(22,163,74,0.1);
+    }
+
+    .recent-events-label {
+      font: 700 10px 'Nunito';
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .event-item {
+      display: block;
+      text-decoration: none;
+      margin-bottom: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(22,163,74,0.04);
+      border: 1px solid rgba(22,163,74,0.1);
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .event-item:hover {
+      background: rgba(22,163,74,0.09);
+      border-color: rgba(22,163,74,0.2);
+    }
+
+    .event-title {
+      font-size: 12px;
+      color: var(--ink);
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 3px;
+    }
+
+    .event-meta {
+      font-size: 10px;
+      color: rgba(106,175,114,0.6);
+      font-weight: 600;
+    }
+
+    /* Right confidence column */
+    .confidence-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+      padding-left: 20px;
+      border-left: 1px solid rgba(22,163,74,0.12);
+    }
+
+    .confidence-block {}
+
+    .confidence-title {
+      font: 700 10px 'Nunito';
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .confidence-meter {
+      height: 10px;
+      background: rgba(22,163,74,0.1);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #16a34a, #4ade80);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 1s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .confidence-val {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 5px;
+    }
+
+    /* Safety score ring for confidence area */
+    .stat-block {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .stat-key {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* ── Crime mini bars in intel ── */
+    .crime-mini-bar-wrap {
+      width: 100%;
+    }
+
+    .crime-mini-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+
+    .crime-mini-row:last-child { margin-bottom: 0; }
+
+    .crime-mini-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      width: 54px;
+      flex-shrink: 0;
+    }
+
+    .crime-mini-track {
+      flex: 1;
+      height: 4px;
+      background: rgba(22,163,74,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .crime-mini-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #16a34a, #4ade80);
+      width: 0%;
+      transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .crime-mini-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink);
+      width: 32px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── Walk + school inside intel ── */
+    .walk-pill-sm {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 50rem;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .walk-car   { background: rgba(239,68,68,0.12);  color: #f87171; }
+    .walk-some  { background: rgba(234,179,8,0.12);  color: #facc15; }
+    .walk-bikeable { background: rgba(59,130,246,0.12); color: #60a5fa; }
+    .walk-able  { background: rgba(34,197,94,0.12);  color: #4ade80; }
+    .walk-walker{ background: rgba(124,58,237,0.14); color: #c4b5fd; }
+
+    .stars-sm { display: flex; gap: 2px; margin-top: 4px; }
+    .star-on  { color: #facc15; font-size: 12px; }
+    .star-off { color: rgba(255,255,255,0.15); font-size: 12px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 780px) {
+      .analysis-grid.visible {
+        grid-template-columns: 1fr;
+      }
+      .intel-grid.visible {
+        grid-template-columns: 1fr;
+      }
+      .synthesis-panel.visible {
+        grid-template-columns: 1fr;
+      }
+      .confidence-wrap {
+        border-left: none;
+        border-top: 1px solid rgba(22,163,74,0.12);
+        padding-left: 0;
+        padding-top: 20px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .topbar-tagline { display: none; }
+    }
+
+    @media (max-width: 500px) {
+      .topbar { padding: 0 16px; }
+      .address-bar { margin: 24px auto 20px; border-radius: 12px; }
+      .address-bar input { font-size: 15px; }
     }
   </style>
 </head>
 <body>
 
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <a class="topbar-logo" href="#">
+    <div class="topbar-logo-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#021a08" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+    </div>
+    <span class="topbar-logo-name">NeighborhoodPulse</span>
+  </a>
+
+  <span class="topbar-tagline">Location Intelligence Dashboard</span>
+
+  <div class="topbar-right">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      LIVE
+    </div>
+    <a class="topbar-gh" href="https://github.com" target="_blank" rel="noopener noreferrer">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+  </div>
+</header>
+
 <main class="page">
 
-  <!-- Rainbow stripe decoration -->
-  <div style="position:relative;height:110px;overflow:hidden;pointer-events:none;width:100%;margin-bottom:0;" aria-hidden="true">
-    <svg viewBox="0 0 1440 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="position:absolute;bottom:0;left:0;width:100%;height:auto;">
-      <path d="M-100,70 C200,10 500,100 800,50 C1100,0 1300,80 1540,40" fill="none" stroke="#166534" stroke-width="18" stroke-linecap="round" opacity="0.6"/>
-      <path d="M-100,82 C200,22 500,112 800,62 C1100,12 1300,92 1540,52" fill="none" stroke="#16a34a" stroke-width="15" stroke-linecap="round" opacity="0.55"/>
-      <path d="M-100,94 C200,34 500,124 800,74 C1100,24 1300,104 1540,64" fill="none" stroke="#4ade80" stroke-width="13" stroke-linecap="round" opacity="0.5"/>
-      <path d="M-100,106 C200,46 500,136 800,86 C1100,36 1300,116 1540,76" fill="none" stroke="#86efac" stroke-width="11" stroke-linecap="round" opacity="0.45"/>
-      <path d="M-100,118 C200,58 500,148 800,98 C1100,48 1300,128 1540,88" fill="none" stroke="#d9f99d" stroke-width="9" stroke-linecap="round" opacity="0.4"/>
-    </svg>
-  </div>
-
-  <!-- Bold hero -->
-  <div style="max-width:900px;margin:0 auto;padding:40px 24px 8px;text-align:center;">
-    <div style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#4ade80;margin-bottom:10px;">Neighborhood Intelligence</div>
-    <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;color:#f0ece8;line-height:1.15;letter-spacing:-0.03em;margin-bottom:12px;">Know your neighborhood<br>before you move in.</h1>
-    <p style="font-size:15px;color:#a09890;max-width:500px;margin:0 auto;font-weight:500;">Real-time risk scores, FEMA flood data, climate risk, and recent local news — all synthesized into one 0–100 neighborhood score.</p>
-  </div>
-
-  <!-- Hero -->
-  <section class="hero">
-    <div class="brand reveal">
-      <div class="brand-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-          <polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
-      </div>
-      <span class="brand-name">NeighborhoodPulse</span>
+  <!-- ── Address bar ── -->
+  <div class="address-bar" id="address-bar-wrap">
+    <div class="address-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
     </div>
-
-    <h1 class="hero-headline reveal">Know before you move.</h1>
-    <p class="hero-sub reveal">Enter any city, neighborhood, or address. Get real air quality data, flood risk, crime stats, school ratings, and a composite livability score — instantly.</p>
-
-    <div class="search-wrap reveal">
-      <div class="search-row">
-        <input
-          class="search-input"
-          id="location-input"
-          type="text"
-          placeholder="Try &quot;San Francisco, CA&quot; or &quot;Austin, TX&quot;"
-          autocomplete="off"
-          onkeydown="if(event.key==='Enter') analyze()"
-        />
-        <button class="btn-analyze" id="run-btn" onclick="analyze()">
-          Analyze
-        </button>
-      </div>
-      <div class="example-pills">
-        <button class="pill" onclick="fillAndRun('Austin, TX')">Austin, TX</button>
-        <button class="pill" onclick="fillAndRun('Miami, FL')">Miami, FL</button>
-        <button class="pill" onclick="fillAndRun('Denver, CO')">Denver, CO</button>
-        <button class="pill" onclick="fillAndRun('Seattle, WA')">Seattle, WA</button>
-        <button class="pill" onclick="fillAndRun('Brooklyn, NY')">Brooklyn, NY</button>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- Wave divider: hero → results -->
-  <div class="wave-divider" aria-hidden="true">
-    <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:60px;">
-      <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="rgba(255,255,255,0.02)"/>
-    </svg>
+    <input
+      id="location-input"
+      type="text"
+      placeholder='Enter any city, neighborhood, or address…'
+      autocomplete="off"
+      onkeydown="if(event.key==='Enter') analyze()"
+    />
+    <button id="run-btn" onclick="analyze()">Analyze neighborhood risk &rarr;</button>
   </div>
 
-  <!-- Error banner -->
+  <!-- ── Example pills ── -->
+  <div class="example-pills">
+    <span class="example-label">Try:</span>
+    <button class="pill" onclick="fillAndRun('Austin, TX')">Austin, TX</button>
+    <button class="pill" onclick="fillAndRun('Miami, FL')">Miami, FL</button>
+    <button class="pill" onclick="fillAndRun('Denver, CO')">Denver, CO</button>
+    <button class="pill" onclick="fillAndRun('Seattle, WA')">Seattle, WA</button>
+    <button class="pill" onclick="fillAndRun('Brooklyn, NY')">Brooklyn, NY</button>
+  </div>
+
+  <!-- ── Error banner ── -->
   <div class="error-banner" id="error-banner"></div>
 
-  <!-- Loading -->
+  <!-- ── Loading ── -->
   <div class="loading-wrap" id="loading-wrap">
     <div class="dots">
       <div class="dot"></div>
@@ -624,92 +952,243 @@
     <span class="loading-label" id="loading-label">Analyzing neighborhood…</span>
   </div>
 
-  <!-- Results -->
-  <div class="results" id="results">
+  <!-- ── Analysis grid: Score Ring + Breakdown ── -->
+  <div class="analysis-grid" id="analysis-grid">
 
-    <!-- Location bar -->
-    <div class="location-bar reveal">
-      <div class="loc-pin">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-      </div>
-      <div class="loc-info">
-        <div class="loc-label">Analyzing</div>
-        <div class="loc-name" id="loc-name">—</div>
-        <div class="loc-coords" id="loc-coords"></div>
-      </div>
-      <span class="cached-badge" id="cached-badge" style="display:none">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        Cached
-      </span>
-    </div>
-
-    <!-- Score ring -->
-    <div class="score-section">
-      <div class="score-ring-wrap reveal">
-        <svg width="160" height="160" viewBox="0 0 160 160">
-          <circle class="score-ring-track" cx="80" cy="80" r="65"/>
-          <circle class="score-ring-fill" id="score-ring-fill" cx="80" cy="80" r="65"/>
+    <!-- Score Ring Card -->
+    <div class="score-card">
+      <div class="score-ring-wrap">
+        <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+          <circle class="score-ring-track" cx="110" cy="110" r="105"/>
+          <circle class="score-ring-fill" id="score-ring-fill" cx="110" cy="110" r="105"/>
         </svg>
         <div class="score-center">
-          <div class="score-num" id="score-num">—</div>
-          <div class="score-out">/ 100</div>
+          <div class="score-number" id="score-number">—</div>
+          <div class="score-label">/ 100 RISK</div>
         </div>
       </div>
-      <div class="score-title reveal">Composite Livability Score</div>
-      <div class="score-verdict reveal" id="score-verdict"></div>
-    </div>
 
-    <!-- Wave divider: score → breakdown -->
-    <div class="wave-divider" aria-hidden="true">
-      <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:60px;">
-        <path d="M0,15 C480,50 960,0 1440,25 L1440,60 L0,60 Z" fill="rgba(255,255,255,0.015)"/>
-      </svg>
-    </div>
-
-    <!-- Score Breakdown -->
-    <div id="score-breakdown" class="panel reveal" style="display:none;">
-      <div class="panel-title">How this score was calculated</div>
-      <div id="breakdown-rows"></div>
-      <div class="panel-footer">
-        <span style="color:var(--text-muted);">Total</span>
-        <span style="font-weight:800; color:var(--text);" id="breakdown-total">— / 100</span>
+      <div class="risk-badge" id="risk-badge">Awaiting Analysis</div>
+      <div class="score-location" id="score-location"></div>
+      <div class="score-coords" id="score-coords"></div>
+      <div class="cached-chip" id="cached-chip">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Cached result
       </div>
     </div>
 
-    <!-- Recent Events -->
-    <div id="recent-events-section" class="panel reveal" style="display:none;">
-      <div class="panel-title">📰 Recent Local Reports</div>
-      <div id="recent-events-rows"></div>
+    <!-- Breakdown Card -->
+    <div class="breakdown-card">
+      <div class="breakdown-title">Risk Breakdown</div>
+
+      <!-- Flood Risk row -->
+      <div class="risk-row" id="breakdown-flood">
+        <div class="risk-row-header">
+          <div class="risk-row-label">
+            <span class="risk-icon">🌊</span>
+            Flood Risk
+          </div>
+          <div class="risk-row-score" id="bd-flood-score">—</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="bd-flood-bar"></div>
+        </div>
+        <div class="risk-row-meta" id="bd-flood-meta"></div>
+      </div>
+
+      <!-- Climate Risk row -->
+      <div class="risk-row" id="breakdown-climate">
+        <div class="risk-row-header">
+          <div class="risk-row-label">
+            <span class="risk-icon">🌡️</span>
+            Climate Risk
+          </div>
+          <div class="risk-row-score" id="bd-climate-score">—</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="bd-climate-bar"></div>
+        </div>
+        <div class="risk-row-meta" id="bd-climate-meta"></div>
+      </div>
+
+      <!-- Crime row -->
+      <div class="risk-row" id="breakdown-crime">
+        <div class="risk-row-header">
+          <div class="risk-row-label">
+            <span class="risk-icon">🔒</span>
+            Crime Index
+          </div>
+          <div class="risk-row-score" id="bd-crime-score">—</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="bd-crime-bar"></div>
+        </div>
+        <div class="risk-row-meta" id="bd-crime-meta"></div>
+      </div>
+
+      <!-- Air Quality row -->
+      <div class="risk-row" id="breakdown-aqi">
+        <div class="risk-row-header">
+          <div class="risk-row-label">
+            <span class="risk-icon">💨</span>
+            Air Quality
+          </div>
+          <div class="risk-row-score" id="bd-aqi-score">—</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="bd-aqi-bar"></div>
+        </div>
+        <div class="risk-row-meta" id="bd-aqi-meta"></div>
+      </div>
+
+      <!-- Citation chips -->
+      <div class="citation-chips">
+        <div class="citation-chip">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          FEMA Flood Data
+        </div>
+        <div class="citation-chip">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Zoning Codes
+        </div>
+        <div class="citation-chip">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          NOAA Climate
+        </div>
+        <div class="citation-chip">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          AQI Live Feed
+        </div>
+      </div>
     </div>
 
-    <!-- Wave divider: panels → cards -->
-    <div class="wave-divider" aria-hidden="true">
-      <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:60px;">
-        <path d="M0,30 C360,0 1080,55 1440,20 L1440,60 L0,60 Z" fill="rgba(255,255,255,0.015)"/>
-      </svg>
+  </div><!-- /analysis-grid -->
+
+  <!-- ── Intel Feed — 3 columns ── -->
+  <div class="intel-grid" id="intel-grid">
+
+    <!-- Flood data column -->
+    <div class="intel-col">
+      <div class="intel-col-header">
+        <span class="col-icon">🌊</span>
+        Flood Risk
+      </div>
+      <div class="intel-item">
+        <span class="intel-key">FEMA Zone</span>
+        <span class="intel-val" id="intel-flood-zone">—</span>
+      </div>
+      <div class="intel-item">
+        <span class="intel-key">Risk Level</span>
+        <span class="intel-val" id="intel-flood-risk">—</span>
+      </div>
+      <div class="intel-item">
+        <span class="intel-key">Annual Prob.</span>
+        <span class="intel-val" id="intel-flood-prob">—</span>
+      </div>
+      <div class="intel-item">
+        <span class="intel-key">Walk Score</span>
+        <span class="intel-val" id="intel-walk">—</span>
+      </div>
+      <div id="intel-walk-pill" style="margin-top:4px;"></div>
     </div>
 
-    <!-- Cards -->
-    <div class="cards-grid" id="cards-grid">
-      <!-- injected by JS -->
+    <!-- Zoning / social data column -->
+    <div class="intel-col">
+      <div class="intel-col-header">
+        <span class="col-icon">🏘️</span>
+        Zoning &amp; Schools
+      </div>
+      <div class="intel-item">
+        <span class="intel-key">School Rating</span>
+        <span class="intel-val" id="intel-school">—</span>
+      </div>
+      <div id="intel-stars" style="margin-bottom:6px;"></div>
+      <div class="intel-item">
+        <span class="intel-key">Safety Score</span>
+        <span class="intel-val" id="intel-safety">—</span>
+      </div>
+      <div style="margin-top:8px;">
+        <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;letter-spacing:0.04em;text-transform:uppercase;">Crime Rates (per 100k)</div>
+        <div class="crime-mini-wrap" id="intel-crime-bars"></div>
+      </div>
     </div>
 
-  </div>
+    <!-- Climate / AQI column -->
+    <div class="intel-col">
+      <div class="intel-col-header">
+        <span class="col-icon">🌡️</span>
+        Climate &amp; Air
+      </div>
+      <div class="intel-item">
+        <span class="intel-key">AQI</span>
+        <span class="intel-val" id="intel-aqi">—</span>
+      </div>
+      <div class="intel-item">
+        <span class="intel-key">Category</span>
+        <span class="intel-val" id="intel-aqi-cat">—</span>
+      </div>
+      <div class="intel-item">
+        <span class="intel-key">Coordinates</span>
+        <span class="intel-val" id="intel-coords">—</span>
+      </div>
+      <div class="intel-item">
+        <span class="intel-key">Composite</span>
+        <span class="intel-val" id="intel-composite">—</span>
+      </div>
+    </div>
+
+  </div><!-- /intel-grid -->
+
+  <!-- ── AI Synthesis ── -->
+  <div class="synthesis-panel" id="synthesis-panel">
+
+    <div class="synthesis-left">
+      <div class="synthesis-label">AI Assessment</div>
+      <div class="synthesis-text" id="synthesis-text">
+        Analysis will appear here after you run a neighborhood query.
+      </div>
+
+      <!-- Recent events inside synthesis -->
+      <div class="recent-events-wrap" id="recent-events-wrap" style="display:none;">
+        <div class="recent-events-label">Recent Local Reports</div>
+        <div id="recent-events-rows"></div>
+      </div>
+    </div>
+
+    <div class="confidence-wrap">
+      <div class="confidence-block">
+        <div class="confidence-title">Data Confidence</div>
+        <div class="confidence-meter">
+          <div class="confidence-fill" id="confidence-fill"></div>
+        </div>
+        <div class="confidence-val" id="confidence-val">—</div>
+      </div>
+
+      <div class="confidence-block">
+        <div class="confidence-title">Overall Safety</div>
+        <div class="stat-block">
+          <div class="stat-value" id="synth-safety">—</div>
+          <div class="stat-key">/ 100</div>
+        </div>
+      </div>
+
+      <div class="confidence-block">
+        <div class="confidence-title">Risk Score</div>
+        <div class="stat-block">
+          <div class="stat-value" id="synth-risk">—</div>
+          <div class="stat-key">Composite</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /synthesis-panel -->
 
 </main>
 
 <script>
   const API = '';
 
-  /* ── Intersection Observer for reveal animations ── */
-  const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
+  /* ── Helpers ── */
   function escHtml(s) {
     if (s == null) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -740,6 +1219,7 @@
     }
   }
 
+  /* ── Main analyze ── */
   async function analyze() {
     const location = document.getElementById('location-input').value.trim();
     if (!location || location.length < 3 || !/[a-zA-Z]/.test(location)) {
@@ -751,7 +1231,11 @@
     const btn = document.getElementById('run-btn');
     btn.disabled = true;
 
-    document.getElementById('results').classList.remove('visible');
+    // Hide result panels
+    document.getElementById('analysis-grid').classList.remove('visible');
+    document.getElementById('intel-grid').classList.remove('visible');
+    document.getElementById('synthesis-panel').classList.remove('visible');
+
     setLoading(true, 'Geocoding location…');
 
     try {
@@ -772,55 +1256,61 @@
     }
   }
 
-  /* ── Score ring ── */
+  /* ── Score ring animation ── */
   function animateRing(score) {
-    const circumference = 408; // 2π × 65
+    const r = 105;
+    const circumference = 2 * Math.PI * r; // 659.73
     const offset = circumference - (score / 100) * circumference;
     const fill = document.getElementById('score-ring-fill');
 
-    // Color gradient based on score
     let color;
     if (score >= 75)      color = '#22c55e';
-    else if (score >= 55) color = '#3b82f6';
+    else if (score >= 55) color = '#4ade80';
     else if (score >= 35) color = '#eab308';
     else                  color = '#ef4444';
 
     fill.style.stroke = color;
-
-    // Animate from 0
     fill.style.strokeDashoffset = circumference;
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         fill.style.strokeDashoffset = offset;
       });
     });
 
-    document.getElementById('score-num').textContent = score;
-    document.getElementById('score-num').style.color = color;
+    const numEl = document.getElementById('score-number');
+    numEl.textContent = score;
+    numEl.style.color = color;
+  }
 
-    const verdicts = {
-      high:   'Excellent neighborhood',
-      good:   'Good place to live',
-      fair:   'Some concerns to weigh',
-      poor:   'Significant risk factors',
-    };
-    let verdict;
-    if (score >= 75)      verdict = verdicts.high;
-    else if (score >= 55) verdict = verdicts.good;
-    else if (score >= 35) verdict = verdicts.fair;
-    else                  verdict = verdicts.poor;
-    document.getElementById('score-verdict').textContent = verdict;
-    document.getElementById('score-verdict').style.color = color;
+  /* ── Risk badge ── */
+  function setRiskBadge(score) {
+    const badge = document.getElementById('risk-badge');
+    let label, bg, color;
+    if (score >= 75) {
+      label = 'LOW RISK';
+      bg = 'rgba(34,197,94,0.15)';
+      color = '#4ade80';
+    } else if (score >= 55) {
+      label = 'MODERATE';
+      bg = 'rgba(74,222,128,0.12)';
+      color = '#86efac';
+    } else if (score >= 35) {
+      label = 'ELEVATED';
+      bg = 'rgba(234,179,8,0.15)';
+      color = '#facc15';
+    } else {
+      label = 'HIGH RISK';
+      bg = 'rgba(239,68,68,0.15)';
+      color = '#f87171';
+    }
+    badge.textContent = label;
+    badge.style.background = bg;
+    badge.style.color = color;
+    badge.style.border = `1px solid ${color}33`;
   }
 
   /* ── AQI helpers ── */
-  function aqiClass(aqi) {
-    if (aqi < 50)  return 'aqi-good';
-    if (aqi < 100) return 'aqi-moderate';
-    if (aqi < 150) return 'aqi-usg';
-    return 'aqi-bad';
-  }
-
   function aqiColor(aqi) {
     if (aqi < 50)  return '#22c55e';
     if (aqi < 100) return '#eab308';
@@ -828,64 +1318,95 @@
     return '#ef4444';
   }
 
-  /* ── Flood helpers ── */
-  function floodClass(risk) {
-    if (risk === 'High')     return 'flood-high';
-    if (risk === 'Moderate') return 'flood-mod';
-    if (risk === 'Low')      return 'flood-low';
-    return 'flood-min';
+  /* ── Flood risk helpers ── */
+  function floodColor(risk) {
+    if (risk === 'High')     return '#ef4444';
+    if (risk === 'Moderate') return '#f97316';
+    if (risk === 'Low')      return '#eab308';
+    return '#22c55e';
+  }
+
+  function floodZoneToProb(zone) {
+    if (!zone) return 'N/A';
+    const z = String(zone).toUpperCase();
+    if (z.startsWith('A') || z.startsWith('V')) return '> 1% / yr';
+    if (z === 'X') return '< 0.2% / yr';
+    return 'Minimal';
+  }
+
+  /* ── Walk pill ── */
+  function walkPillClass(score) {
+    if (score >= 90) return 'walk-walker';
+    if (score >= 70) return 'walk-able';
+    if (score >= 50) return 'walk-bikeable';
+    if (score >= 25) return 'walk-some';
+    return 'walk-car';
+  }
+
+  function walkLabel(score) {
+    if (score >= 90) return "Walker's Paradise";
+    if (score >= 70) return 'Very Walkable';
+    if (score >= 50) return 'Somewhat Walkable';
+    if (score >= 25) return 'Car-Friendly';
+    return 'Car-Dependent';
   }
 
   /* ── Stars ── */
-  function renderStars(rating) {
-    let html = '<div class="stars">';
+  function renderStarsSm(rating) {
+    let h = '<div class="stars-sm">';
     for (let i = 1; i <= 10; i++) {
-      html += `<span class="${i <= rating ? 'star-filled' : 'star-empty'}">★</span>`;
+      h += `<span class="${i <= rating ? 'star-on' : 'star-off'}">★</span>`;
     }
-    html += '</div>';
-    return html;
+    h += '</div>';
+    return h;
   }
 
-  /* ── Walk score pill ── */
-  function walkPill(score) {
-    let cls, label;
-    if (score >= 90)      { cls = 'walk-walker';  label = "Walker's Paradise"; }
-    else if (score >= 70) { cls = 'walk-able';    label = 'Very Walkable'; }
-    else if (score >= 50) { cls = 'walk-bikeable'; label = 'Somewhat Walkable'; }
-    else if (score >= 25) { cls = 'walk-some';    label = 'Car-Friendly'; }
-    else                  { cls = 'walk-car';     label = 'Car-Dependent'; }
-    return `<span class="walk-pill ${cls}">${label}</span>`;
+  /* ── Safety color ── */
+  function safetyColor(score) {
+    if (score >= 75) return '#22c55e';
+    if (score >= 55) return '#4ade80';
+    if (score >= 35) return '#eab308';
+    return '#ef4444';
   }
 
-  /* ── Crime bars ── */
-  function renderCrimeBars(violent, property, total) {
+  /* ── Progress fill helper ── */
+  function setBar(barId, pct) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.getElementById(barId);
+        if (el) el.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      });
+    });
+  }
+
+  /* ── Mini crime bars ── */
+  function renderCrimeMini(violent, property, total) {
     const MAX = 5000;
-    const vPct  = Math.min(100, (violent  / MAX) * 100);
-    const pPct  = Math.min(100, (property / MAX) * 100);
-    const tPct  = Math.min(100, (total    / MAX) * 100);
+    const vP = Math.min(100, (violent / MAX) * 100);
+    const pP = Math.min(100, (property / MAX) * 100);
+    const tP = Math.min(100, (total / MAX) * 100);
+
     return `
-      <div class="crime-bars" id="crime-bars">
-        <div class="crime-bar-row">
-          <span class="crime-bar-label">Violent</span>
-          <div class="crime-bar-track"><div class="crime-bar-fill" style="width:0%" data-target="${vPct}"></div></div>
-          <span class="crime-bar-num">${violent}</span>
-        </div>
-        <div class="crime-bar-row">
-          <span class="crime-bar-label">Property</span>
-          <div class="crime-bar-track"><div class="crime-bar-fill" style="width:0%" data-target="${pPct}"></div></div>
-          <span class="crime-bar-num">${property}</span>
-        </div>
-        <div class="crime-bar-row">
-          <span class="crime-bar-label">Total</span>
-          <div class="crime-bar-track"><div class="crime-bar-fill" style="width:0%" data-target="${tPct}"></div></div>
-          <span class="crime-bar-num">${total}</span>
-        </div>
+      <div class="crime-mini-row">
+        <span class="crime-mini-label">Violent</span>
+        <div class="crime-mini-track"><div class="crime-mini-fill" data-target="${vP}"></div></div>
+        <span class="crime-mini-num">${violent}</span>
+      </div>
+      <div class="crime-mini-row">
+        <span class="crime-mini-label">Property</span>
+        <div class="crime-mini-track"><div class="crime-mini-fill" data-target="${pP}"></div></div>
+        <span class="crime-mini-num">${property}</span>
+      </div>
+      <div class="crime-mini-row">
+        <span class="crime-mini-label">Total</span>
+        <div class="crime-mini-track"><div class="crime-mini-fill" data-target="${tP}"></div></div>
+        <span class="crime-mini-num">${total}</span>
       </div>
     `;
   }
 
-  function animateBars() {
-    document.querySelectorAll('.crime-bar-fill').forEach(bar => {
+  function animateCrimeBars() {
+    document.querySelectorAll('.crime-mini-fill').forEach(bar => {
       const target = bar.getAttribute('data-target');
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -897,146 +1418,143 @@
 
   /* ── Main render ── */
   function renderResults(d) {
-    // Location bar
-    document.getElementById('loc-name').textContent = d.location_name;
-    document.getElementById('loc-coords').textContent = `${d.lat}, ${d.lon}`;
-    const cb = document.getElementById('cached-badge');
-    cb.style.display = d.cached ? 'inline-flex' : 'none';
 
-    // Score ring
+    /* 1. Score ring */
     animateRing(d.composite_score);
+    setRiskBadge(d.composite_score);
 
-    // Score breakdown
+    /* 2. Location metadata */
+    document.getElementById('score-location').textContent = d.location_name;
+    document.getElementById('score-coords').textContent = `${d.lat}, ${d.lon}`;
+    const cachedChip = document.getElementById('cached-chip');
+    if (d.cached) cachedChip.classList.add('visible');
+    else cachedChip.classList.remove('visible');
+
+    /* 3. Breakdown bars — use score_breakdown if available, else derive from data */
+    const bd = d.score_breakdown || {};
+
+    // Flood
+    const floodPts = bd.flood_risk ? bd.flood_risk.points : null;
+    const floodMax = bd.flood_risk ? bd.flood_risk.max : 25;
+    const floodScore = floodPts !== null ? floodPts : (d.flood_risk === 'Low' ? 20 : d.flood_risk === 'Moderate' ? 12 : 5);
+    document.getElementById('bd-flood-score').textContent = floodPts !== null ? `${floodPts} / ${floodMax}` : d.flood_risk;
+    document.getElementById('bd-flood-score').style.color = floodColor(d.flood_risk);
+    document.getElementById('bd-flood-meta').textContent = `FEMA Zone ${d.flood_zone} — ${d.flood_risk} risk`;
+    setBar('bd-flood-bar', floodPts !== null ? (floodPts / floodMax) * 100 : (floodScore / 25) * 100);
+
+    // Climate / Air Quality
+    const aqiPts = bd.air_quality ? bd.air_quality.points : null;
+    const aqiMax = bd.air_quality ? bd.air_quality.max : 25;
+    const aqiPct = aqiPts !== null ? (aqiPts / aqiMax) * 100 : Math.max(0, 100 - d.aqi);
+    document.getElementById('bd-climate-score').textContent = aqiPts !== null ? `${aqiPts} / ${aqiMax}` : `AQI ${d.aqi}`;
+    document.getElementById('bd-climate-score').style.color = aqiColor(d.aqi);
+    document.getElementById('bd-climate-meta').textContent = `AQI ${d.aqi} — ${d.aqi_category}`;
+    setBar('bd-climate-bar', aqiPct);
+
+    // Crime
+    const crimePts = bd.crime ? bd.crime.points : null;
+    const crimeMax = bd.crime ? bd.crime.max : 25;
+    const crimePct = crimePts !== null ? (crimePts / crimeMax) * 100 : Math.max(0, 100 - (d.crime_total / 5000) * 100);
+    document.getElementById('bd-crime-score').textContent = crimePts !== null ? `${crimePts} / ${crimeMax}` : d.crime_total;
+    document.getElementById('bd-crime-meta').textContent = `${d.crime_violent} violent · ${d.crime_property} property per 100k`;
+    setBar('bd-crime-bar', crimePct);
+
+    // Schools / misc
+    const schoolPts = bd.schools ? bd.schools.points : null;
+    const schoolMax = bd.schools ? bd.schools.max : 25;
+    const schoolPct = schoolPts !== null ? (schoolPts / schoolMax) * 100 : (d.school_rating / 10) * 100;
+    document.getElementById('bd-aqi-score').textContent = schoolPts !== null ? `${schoolPts} / ${schoolMax}` : `${d.school_rating}/10`;
+    document.getElementById('bd-aqi-meta').textContent = bd.schools ? (bd.schools.label || '') : `School rating: ${d.school_rating}/10`;
+    setBar('bd-aqi-bar', schoolPct);
+
+    /* 4. Intel feed columns */
+    // Flood column
+    document.getElementById('intel-flood-zone').textContent = `Zone ${d.flood_zone}`;
+    document.getElementById('intel-flood-risk').textContent = d.flood_risk;
+    document.getElementById('intel-flood-risk').style.color = floodColor(d.flood_risk);
+    document.getElementById('intel-flood-prob').textContent = floodZoneToProb(d.flood_zone);
+    document.getElementById('intel-walk').textContent = d.walk_score;
+    document.getElementById('intel-walk-pill').innerHTML =
+      `<span class="walk-pill-sm ${walkPillClass(d.walk_score)}">${walkLabel(d.walk_score)}</span>`;
+
+    // Zoning / schools column
+    document.getElementById('intel-school').textContent = `${d.school_rating} / 10`;
+    document.getElementById('intel-stars').innerHTML = renderStarsSm(d.school_rating);
+    const safetyEl = document.getElementById('intel-safety');
+    safetyEl.textContent = d.overall_safety;
+    safetyEl.style.color = safetyColor(d.overall_safety);
+    document.getElementById('intel-crime-bars').innerHTML = renderCrimeMini(d.crime_violent, d.crime_property, d.crime_total);
+
+    // Climate / AQI column
+    const aqiEl = document.getElementById('intel-aqi');
+    aqiEl.textContent = d.aqi;
+    aqiEl.style.color = aqiColor(d.aqi);
+    document.getElementById('intel-aqi-cat').textContent = d.aqi_category;
+    document.getElementById('intel-coords').textContent = `${Number(d.lat).toFixed(3)}, ${Number(d.lon).toFixed(3)}`;
+    document.getElementById('intel-composite').textContent = `${d.composite_score} / 100`;
+
+    /* 5. AI Synthesis */
+    // Build recommendation text from score_breakdown labels or generic
+    let synthText = '';
     if (d.score_breakdown) {
-      const bd = d.score_breakdown;
-      const labels = {
-        air_quality: '💨 Air Quality',
-        flood_risk:  '🌊 Flood Risk',
-        crime:       '🔒 Crime Index',
-        schools:     '🏫 Schools',
-        walkability: '🚶 Walkability',
-      };
-      const rows = Object.entries(bd).map(([k, v]) => {
-        const pct = Math.round((v.points / v.max) * 100);
-        const barColor = pct >= 70 ? '#22c55e' : pct >= 40 ? '#eab308' : '#ef4444';
-        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <div style="width:130px;font-size:13px;color:var(--text-muted);flex-shrink:0;font-weight:600;">${labels[k]||k}</div>
-          <div style="flex:1;background:rgba(255,255,255,0.07);border-radius:50rem;height:6px;overflow:hidden;">
-            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:50rem;transition:width .6s ease;"></div>
-          </div>
-          <div style="width:70px;font-size:12px;color:var(--text-muted);text-align:right;font-weight:600;">${v.points} / ${v.max} pts</div>
-          <div style="width:130px;font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(v.label)}">${escHtml(v.label)}</div>
-        </div>`;
-      }).join('');
-      document.getElementById('breakdown-rows').innerHTML = rows;
-      document.getElementById('breakdown-total').textContent = `${d.composite_score} / 100`;
-      const bdEl = document.getElementById('score-breakdown');
-      bdEl.style.display = 'block';
-      revealObserver.observe(bdEl);
+      const parts = Object.values(d.score_breakdown).map(v => v.label).filter(Boolean);
+      synthText = parts.join(' ');
     }
+    if (!synthText) {
+      synthText = `${d.location_name} has a composite risk score of ${d.composite_score}/100. ` +
+        `FEMA flood zone ${d.flood_zone} indicates ${d.flood_risk.toLowerCase()} flood risk. ` +
+        `Current AQI is ${d.aqi} (${d.aqi_category}). ` +
+        `Local schools rate ${d.school_rating}/10. ` +
+        `Crime index: ${d.crime_total} per 100k residents. ` +
+        `Walk score: ${d.walk_score}/100.`;
+    }
+    document.getElementById('synthesis-text').textContent = synthText;
+
+    // Confidence meter: derive from data completeness
+    const fields = [d.aqi, d.flood_zone, d.crime_total, d.school_rating, d.walk_score, d.overall_safety];
+    const filled = fields.filter(f => f !== null && f !== undefined && f !== 0).length;
+    const confidencePct = Math.round((filled / fields.length) * 100);
+    document.getElementById('confidence-val').textContent = `${confidencePct}% confidence`;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('confidence-fill').style.width = confidencePct + '%';
+      });
+    });
+
+    // Safety + composite in confidence area
+    const synthSafety = document.getElementById('synth-safety');
+    synthSafety.textContent = d.overall_safety;
+    synthSafety.style.color = safetyColor(d.overall_safety);
+
+    const synthRisk = document.getElementById('synth-risk');
+    synthRisk.textContent = d.composite_score;
+    synthRisk.style.color = d.composite_score >= 55 ? '#4ade80' : d.composite_score >= 35 ? '#eab308' : '#ef4444';
 
     // Recent events
-    const evSection = document.getElementById('recent-events-section');
+    const evWrap = document.getElementById('recent-events-wrap');
     const evRows = document.getElementById('recent-events-rows');
     if (d.recent_events && d.recent_events.length > 0) {
       evRows.innerHTML = d.recent_events.map(ev => `
-        <a href="${escHtml(ev.url)}" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none; margin-bottom:12px; padding:12px 16px; border-radius:1rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
-          <div style="font-size:13px; color:var(--text); line-height:1.4; margin-bottom:4px; font-weight:600;">${escHtml(ev.title)}</div>
-          <div style="font-size:11px; color:var(--text-dim); font-weight:500;">${escHtml(ev.source)}${ev.published ? ' &middot; ' + escHtml(ev.published) : ''}</div>
+        <a class="event-item" href="${escHtml(ev.url)}" target="_blank" rel="noopener noreferrer">
+          <div class="event-title">${escHtml(ev.title)}</div>
+          <div class="event-meta">${escHtml(ev.source)}${ev.published ? ' · ' + escHtml(ev.published) : ''}</div>
         </a>
       `).join('');
-      evSection.style.display = 'block';
-      revealObserver.observe(evSection);
+      evWrap.style.display = 'block';
     } else {
-      evSection.style.display = 'none';
+      evWrap.style.display = 'none';
     }
 
-    // Cards data
-    const aColor = aqiColor(d.aqi);
-    const fCls   = floodClass(d.flood_risk);
+    /* 6. Show panels */
+    document.getElementById('analysis-grid').classList.add('visible');
+    document.getElementById('intel-grid').classList.add('visible');
+    document.getElementById('synthesis-panel').classList.add('visible');
 
-    const cards = [
-      {
-        icon: '💨',
-        label: 'Air Quality',
-        valueHtml: `<span class="${aqiClass(d.aqi)}" style="font-size:32px;font-weight:800">${d.aqi}</span>`,
-        sub: `AQI &mdash; ${escHtml(d.aqi_category)}`,
-        extra: '',
-      },
-      {
-        icon: '🌊',
-        label: 'Flood Risk',
-        valueHtml: `<span class="${fCls}" style="font-size:28px;font-weight:800">Zone ${escHtml(d.flood_zone)}</span>`,
-        sub: `FEMA flood zone &mdash; ${escHtml(d.flood_risk)} risk`,
-        extra: '',
-      },
-      {
-        icon: '🔒',
-        label: 'Crime Index',
-        valueHtml: `<span style="font-size:24px;font-weight:800;color:#94a3b8">per 100k</span>`,
-        sub: 'Annual crime rates',
-        extra: renderCrimeBars(d.crime_violent, d.crime_property, d.crime_total),
-      },
-      {
-        icon: '🏫',
-        label: 'School Rating',
-        valueHtml: `<span style="font-size:32px;font-weight:800;color:#facc15">${d.school_rating}<span style="font-size:16px;color:var(--text-muted)">/10</span></span>`,
-        sub: 'Public school quality index',
-        extra: renderStars(d.school_rating),
-      },
-      {
-        icon: '🚶',
-        label: 'Walk Score',
-        valueHtml: `<span style="font-size:32px;font-weight:800;color:var(--blue-lt)">${d.walk_score}</span>`,
-        sub: 'Walkability index (0&ndash;100)',
-        extra: walkPill(d.walk_score),
-      },
-      {
-        icon: '🛡️',
-        label: 'Overall Safety',
-        valueHtml: `<span style="font-size:32px;font-weight:800;color:${safetyColor(d.overall_safety)}">${d.overall_safety}</span>`,
-        sub: 'Composite safety score (0&ndash;100)',
-        extra: '',
-      },
-    ];
+    /* 7. Animate crime bars */
+    setTimeout(animateCrimeBars, 300);
 
-    const grid = document.getElementById('cards-grid');
-    grid.innerHTML = cards.map((c, i) => `
-      <div class="card" id="card-${i}">
-        <span class="card-icon">${c.icon}</span>
-        <div class="card-label">${c.label}</div>
-        <div class="card-value">${c.valueHtml}</div>
-        <div class="card-sub">${c.sub}</div>
-        ${c.extra}
-      </div>
-    `).join('');
-
-    // Show results section
-    document.getElementById('results').classList.add('visible');
-
-    // Re-observe newly revealed elements inside results
-    document.querySelectorAll('#results .reveal').forEach(el => revealObserver.observe(el));
-
-    // Staggered card animations
-    cards.forEach((_, i) => {
-      setTimeout(() => {
-        const el = document.getElementById(`card-${i}`);
-        if (el) el.classList.add('visible');
-      }, 100 + i * 80);
-    });
-
-    // Animate crime bars after cards appear
-    setTimeout(animateBars, 400);
-
-    // Scroll to results smoothly
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function safetyColor(score) {
-    if (score >= 75) return '#22c55e';
-    if (score >= 55) return '#3b82f6';
-    if (score >= 35) return '#eab308';
-    return '#ef4444';
+    /* 8. Scroll to results */
+    document.getElementById('analysis-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 </script>
 </body>
